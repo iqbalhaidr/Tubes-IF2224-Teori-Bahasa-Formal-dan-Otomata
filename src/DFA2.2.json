@@ -1,0 +1,59 @@
+{
+  "start_state": "q0",
+  "final_state":[
+    "CHAR_LITERAL",
+    "STRING_LITERAL",
+    "SEMICOLON",
+    "NUMBER",
+    "IDENTIFIER",
+    "COMMA"
+
+  ],
+  "LITERAL_STATES" : ["q1", "q2", "q4", "q5", "STRING_LITERAL", "CHAR_LITERAL"],
+  "reserved_word": [
+    { "lexeme": "program",   "token": "KEYWORD" },
+    { "lexeme": "var",       "token": "KEYWORD" },
+    { "lexeme": "begin",     "token": "KEYWORD" },
+    { "lexeme": "end",       "token": "KEYWORD" },
+    { "lexeme": "if",        "token": "KEYWORD" },
+    { "lexeme": "then",      "token": "KEYWORD" },
+    { "lexeme": "else",      "token": "KEYWORD" },
+    { "lexeme": "while",     "token": "KEYWORD" },
+    { "lexeme": "do",        "token": "KEYWORD" },
+    { "lexeme": "for",       "token": "KEYWORD" },
+    { "lexeme": "to",        "token": "KEYWORD" },
+    { "lexeme": "downto",    "token": "KEYWORD" },
+    { "lexeme": "integer",   "token": "KEYWORD" },
+    { "lexeme": "real",      "token": "KEYWORD" },
+    { "lexeme": "boolean",   "token": "KEYWORD" },
+    { "lexeme": "char",      "token": "KEYWORD" },
+    { "lexeme": "array",     "token": "KEYWORD" },
+    { "lexeme": "of",        "token": "KEYWORD" },
+    { "lexeme": "procedure", "token": "KEYWORD" },
+    { "lexeme": "function",  "token": "KEYWORD" },
+    { "lexeme": "const",     "token": "KEYWORD" },
+    { "lexeme": "type",      "token": "KEYWORD" }
+  ],
+
+  "transition_func" : [
+    { "from": "q0", "input": "'", "to": "q1" },
+    { "from": "q1", "input": "'", "to": "CHAR_LITERAL" },
+    { "from": "q1", "input": "reg[^']", "to": "q2" },
+    { "from": "q2", "input": "'", "to": "CHAR_LITERAL" },
+    { "from": "q2", "input": "reg[^']", "to": "q4" },
+    { "from": "q4", "input":"reg[^']", "to": "q4" },
+    { "from": "q4", "input": "'", "to": "STRING_LITERAL" },
+    { "from": "CHAR_LITERAL", "input": "'", "to": "q5" },
+    { "from": "q5", "input": "'", "to": "STRING_LITERAL" },
+    { "from": "q5", "input": "reg[^']", "to": "q4" },
+    { "from": "STRING_LITERAL", "input": "'", "to": "q5" },
+
+    { "from": "q0", "input": ";", "to": "SEMICOLON" },
+    { "from": "q0", "input": ",", "to": "COMMA"},
+    {"from": "q0", "input": ":", "to": "COLON"},
+
+    { "from": "q0", "input": "reg[A-Za-z]", "to": "IDENTIFIER"},
+    { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9_]", "to": "IDENTIFIER"}
+
+  ]
+}
