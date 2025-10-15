@@ -25,4 +25,32 @@ begin
         hasil := 100
     else
         total := 0;
+
+    _inivariablebenar := 5
+    9inierror :+ 6
+    Inibenar :=5
+    inibenar:=5
+
+    5+5=10
+    5- 5 = 0
+    5/5 = 1
+    5*5-4 = 21
+    5**3 = 125
+    5 div 3 = 1
+    5 mOd 2 = 3
+
+    10 > 4
+    10 >= 4
+    10 <> 4
+    10< 20
+    10 <=20
+
+    10<<4
+    10 >> 5
+    true AnD true
+    true not false
+    true or false
+    5 SHR 5
+    1 shl 3
+
 end.

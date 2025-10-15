@@ -11,7 +11,20 @@
     "INT_LITRL":        { "type": "NUMBER" },
     "RILL_LITRL":       { "type": "NUMBER" },
     "Pos_exp":          { "type": "NUMBER" },
-    "Neg_exp":          { "type": "NUMBER" }
+    "Neg_exp":          { "type": "NUMBER" },
+
+    "ARITHMETIC_OPERATOR":	{"type": "ARITHMETIC_OPERATOR"},
+    "STAR": 		            {"type": "ARITHMETIC_OPERATOR"},
+
+    "EQ":               {"type": "RELATIONAL_OPERATOR"},
+    "LT":               {"type": "RELATIONAL_OPERATOR"},
+    "LT_X":             {"type": "RELATIONAL_OPERATOR"},
+    "GT":               {"type": "RELATIONAL_OPERATOR"},
+    "GT_E":             {"type": "RELATIONAL_OPERATOR"},
+
+    "LOGICAL_OPERATOR": {"type": "LOGICAL_OPERATOR"},
+
+    "ASSIGN_OPERATOR":  {"type": "ASSIGN_OPERATOR"}
   },
 
 
@@ -39,7 +52,16 @@
     { "lexeme": "procedure", "token": "KEYWORD" },
     { "lexeme": "function",  "token": "KEYWORD" },
     { "lexeme": "const",     "token": "KEYWORD" },
-    { "lexeme": "type",      "token": "KEYWORD" }
+    { "lexeme": "type",      "token": "KEYWORD" },
+
+    { "lexeme": "div",   "token": "ARITHMETIC_OPERATOR" },
+    { "lexeme": "mod",   "token": "ARITHMETIC_OPERATOR" },
+    
+    { "lexeme": "and",   "token": "LOGICAL_OPERATOR" },
+    { "lexeme": "or",   "token": "LOGICAL_OPERATOR" },
+    { "lexeme": "not",   "token": "LOGICAL_OPERATOR" },
+    { "lexeme": "shr",   "token": "LOGICAL_OPERATOR" },
+    { "lexeme": "shl",   "token": "LOGICAL_OPERATOR" }
   ],
 
   "transition_func" : [
@@ -59,7 +81,7 @@
     { "from": "q0", "input": ",", "to": "COMMA"},
     {"from": "q0", "input": ":", "to": "COLON"},
 
-    { "from": "q0", "input": "reg[A-Za-z]", "to": "IDENTIFIER"},
+    { "from": "q0", "input": "reg[A-Za-z_]", "to": "IDENTIFIER"},
     { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9_]", "to": "IDENTIFIER" },
     
     { "from": "q0", "input": "reg[0-9]", "to": "INT_LITRL"},
@@ -77,7 +99,25 @@
     { "from": "Acc_Exp_lit", "input": "-", "to": "Neg_exp"},
 
     { "from": "Pos_exp", "input": "reg[0-9]", "to": "Pos_exp"},
-    { "from": "Neg_exp", "input": "reg[0-9]", "to": "Neg_exp"}
+    { "from": "Neg_exp", "input": "reg[0-9]", "to": "Neg_exp"},
+
+    {"from": "q0", "input": "+", "to": "ARITHMETIC_OPERATOR"},
+    {"from": "q0", "input": "-", "to": "ARITHMETIC_OPERATOR"},
+    {"from": "q0", "input": "/", "to": "ARITHMETIC_OPERATOR"},
+    {"from": "q0", "input": "*", "to": "STAR"},
+    {"from": "STAR", "input": "*", "to": "ARITHMETIC_OPERATOR"},
+
+    {"from": "q0", "input": "=", "to": "EQ"},
+    {"from": "q0", "input": "<", "to": "LT"},
+    {"from": "LT", "input": ">", "to": "LT_X"},
+    {"from": "LT", "input": "=", "to": "LT_X"},
+    {"from": "q0", "input": ">", "to": "GT"},
+    {"from": "GT", "input": "=", "to": "GT_E"},
+
+    {"from": "LT", "input": "<", "to": "LOGICAL_OPERATOR"},
+    {"from": "GT", "input": ">", "to": "LOGICAL_OPERATOR"},
+
+    {"from": "COLON", "input": "=", "to": "ASSIGN_OPERATOR"}
 
   ]
 }

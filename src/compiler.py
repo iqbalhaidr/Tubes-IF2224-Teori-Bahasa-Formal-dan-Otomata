@@ -3,6 +3,8 @@ import json
 def match_pattern(pattern, char):
     if pattern == "reg[A-Za-z0-9_]":
         return char.isalnum() or char == "_"
+    elif pattern == "reg[A-Za-z_]":
+        return char.isalpha() or char == "_"
     elif pattern == "reg[A-Za-z]":
         return char.isalpha()
     elif pattern == "reg[0-9]":
@@ -14,13 +16,13 @@ def match_pattern(pattern, char):
 
 def get_next_state(current_state, char, dfa_json):
     for t in dfa_json["transition_func"]:
-        if t["from"] == current_state and match_pattern(t["input"], char):
+        if t["from"] == current_state and match_pattern(t["input"], char.lower()):
             return t["to"]
     return None
 
 def check_keyword(stringValue, list_tok, dfa):
     for item in dfa["reserved_word"]:
-        if item["lexeme"] == stringValue:
+        if item["lexeme"] == stringValue.lower():
             list_tok.append(f"{item['token']}({stringValue})")
             return True
     return False
