@@ -15,7 +15,13 @@ begin
     writeln('Huruf: ', huruf);
     writeln('Tanda petik tunggal: ', tandaPetik);
 
-    if data > 0 then
+    angkaInt := 123;
+    angkaReal := 3.1415;
+    angkaSci1 := 1.2E3;
+    angkaSci2 := 7E5;
+    angkaSci3 := 4.0E+2;
+
+    if angkaInt > 0 then
         hasil := 100
     else
         total := 0;

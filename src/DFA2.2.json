@@ -1,15 +1,22 @@
 {
   "start_state": "q0",
-  "final_state":[
-    "CHAR_LITERAL",
-    "STRING_LITERAL",
-    "SEMICOLON",
-    "NUMBER",
-    "IDENTIFIER",
-    "COMMA"
+  "final_states": {
+    "CHAR_LITERAL":     { "type": "CHAR_LITERAL" },
+    "STRING_LITERAL":   { "type": "STRING_LITERAL" },
+    "SEMICOLON":        { "type": "SEMICOLON" },
+    "COLON":            { "type": "COLON" },
+    "COMMA":            { "type": "COMMA" },
+    "IDENTIFIER":       { "type": "IDENTIFIER" },
 
-  ],
+    "INT_LITRL":        { "type": "NUMBER" },
+    "RILL_LITRL":       { "type": "NUMBER" },
+    "Pos_exp":          { "type": "NUMBER" },
+    "Neg_exp":          { "type": "NUMBER" }
+  },
+
+
   "LITERAL_STATES" : ["q1", "q2", "q4", "q5", "STRING_LITERAL", "CHAR_LITERAL"],
+
   "reserved_word": [
     { "lexeme": "program",   "token": "KEYWORD" },
     { "lexeme": "var",       "token": "KEYWORD" },
@@ -53,7 +60,24 @@
     {"from": "q0", "input": ":", "to": "COLON"},
 
     { "from": "q0", "input": "reg[A-Za-z]", "to": "IDENTIFIER"},
-    { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9_]", "to": "IDENTIFIER"}
+    { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9_]", "to": "IDENTIFIER" },
+    
+    { "from": "q0", "input": "reg[0-9]", "to": "INT_LITRL"},
+    { "from": "INT_LITRL", "input": "reg[0-9]", "to": "INT_LITRL"},
+    { "from": "INT_LITRL", "input": "E", "to": "Acc_Exp_lit"},
+    { "from": "INT_LITRL", "input": "e", "to": "Acc_Exp_lit"},
+
+    { "from": "INT_LITRL", "input": ".", "to": "RILL_LITRL"},
+    { "from": "RILL_LITRL", "input": "reg[0-9]", "to": "RILL_LITRL"},
+    { "from": "RILL_LITRL", "input": "E", "to": "Acc_Exp_lit"},
+    { "from": "RILL_LITRL", "input": "e", "to": "Acc_Exp_lit"},
+
+    { "from": "Acc_Exp_lit", "input": "+", "to": "Pos_exp"},
+    { "from": "Acc_Exp_lit", "input": "reg[0-9]", "to": "Pos_exp"},
+    { "from": "Acc_Exp_lit", "input": "-", "to": "Neg_exp"},
+
+    { "from": "Pos_exp", "input": "reg[0-9]", "to": "Pos_exp"},
+    { "from": "Neg_exp", "input": "reg[0-9]", "to": "Neg_exp"}
 
   ]
 }
