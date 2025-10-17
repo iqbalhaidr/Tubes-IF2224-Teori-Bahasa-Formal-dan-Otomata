@@ -33,7 +33,15 @@ list_tokens = []
 with open("src/DFA2.2.json", "r") as f:
     dfa = json.load(f)
 
-with open("src/coba.pas", "r") as file:
+try :
+    file = input("Masukkan nama file sumber (contoh: test1): ")
+    with open(f"test/{file}.pas", "r") as file:
+        pass
+except FileNotFoundError:
+    print("File tidak ditemukan. Pastikan file berada di folder 'test' dan berekstensi .pas")
+    exit()
+
+with open(f"test/{file}.pas", "r") as file:
     current_state = "q0"
     value = ""
     while True:
