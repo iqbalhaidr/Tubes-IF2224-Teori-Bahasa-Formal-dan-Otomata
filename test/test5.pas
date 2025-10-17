@@ -1,7 +1,7 @@
 program test5;
 
 var
-    angka: array[1..5] of integer;
+    angka: array[1,2,3,4,5] of integer; 
     i: integer;
 
 begin
