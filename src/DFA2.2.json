@@ -5,6 +5,7 @@
     "STRING_LITERAL":   { "type": "STRING_LITERAL" },
     "SEMICOLON":        { "type": "SEMICOLON" },
     "COLON":            { "type": "COLON" },
+    "COMMA":            { "type": "COMMA" },
     "DOT":              { "type": "DOT" },
     "LPARENTHESIS":    { "type": "LPARENTHESIS" },
     "RPARENTHESIS":    { "type": "RPARENTHESIS" },
