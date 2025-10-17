@@ -5,7 +5,9 @@
     "STRING_LITERAL":   { "type": "STRING_LITERAL" },
     "SEMICOLON":        { "type": "SEMICOLON" },
     "COLON":            { "type": "COLON" },
-    "COMMA":            { "type": "COMMA" },
+    "DOT":              { "type": "DOT" },
+    "LPARENTHESIS":    { "type": "LPARENTHESIS" },
+    "RPARENTHESIS":    { "type": "RPARENTHESIS" },
     "IDENTIFIER":       { "type": "IDENTIFIER" },
 
     "INT_LITRL":        { "type": "NUMBER" },
@@ -80,6 +82,9 @@
     { "from": "q0", "input": ";", "to": "SEMICOLON" },
     { "from": "q0", "input": ",", "to": "COMMA"},
     {"from": "q0", "input": ":", "to": "COLON"},
+    {"from": "q0", "input": ".", "to": "DOT"},
+    {"from": "q0", "input": "(", "to": "LPARENTHESIS"},
+    {"from": "q0", "input": ")", "to": "RPARENTHESIS"},
 
     { "from": "q0", "input": "reg[A-Za-z_]", "to": "IDENTIFIER"},
     { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9_]", "to": "IDENTIFIER" },
