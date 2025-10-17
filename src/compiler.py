@@ -35,19 +35,19 @@ with open("src/DFA2.2.json", "r") as f:
 
 try :
     file = input("Masukkan nama file sumber (contoh: test1): ")
-    with open(f"test/{file}.pas", "r") as file:
+    with open(f"test/{file}.pas", "r") as f:
         pass
 except FileNotFoundError:
     print("File tidak ditemukan. Pastikan file berada di folder 'test' dan berekstensi .pas")
     exit()
 
-with open(f"test/{file}.pas", "r") as file:
+with open(f"test/{file}.pas", "r") as f:
     current_state = "q0"
     value = ""
     while True:
         #simpan pointer pos untuk jaga-jaga bila ada 1 token yang pembacaannya sudah selesai yang ditandai dengan temp null
-        pointerPos = file.tell()
-        ch = file.read(1)
+        pointerPos = f.tell()
+        ch = f.read(1)
 
         temp = get_next_state(current_state, ch, dfa)
 
@@ -73,14 +73,16 @@ with open(f"test/{file}.pas", "r") as file:
             current_state = "q0"
             continue
 
+
+
         #jika menemukan sebuah input char yang tidak menuju ke state manapun, maka akan dianggap pembacaan 1 token selesai
         if temp is None:
             if check_keyword(value, list_tokens, dfa):
-                file.seek(pointerPos)
+                f.seek(pointerPos)
             elif current_state in dfa["final_states"].keys():
                 token_type = dfa["final_states"][current_state]["type"]
                 list_tokens.append(f"{token_type}({value})")
-                file.seek(pointerPos)
+                f.seek(pointerPos)
             else:
                 list_tokens.append(f"<ERROR>({ch})")
 

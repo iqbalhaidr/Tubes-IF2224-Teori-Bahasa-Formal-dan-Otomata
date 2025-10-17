@@ -26,7 +26,11 @@
 
     "LOGICAL_OPERATOR": {"type": "LOGICAL_OPERATOR"},
 
-    "ASSIGN_OPERATOR":  {"type": "ASSIGN_OPERATOR"}
+    "ASSIGN_OPERATOR":  {"type": "ASSIGN_OPERATOR"},
+
+    "LBRACKET":  {"type": "LBRACKET"},
+    "RBRACKET":  {"type": "RBRACKET"}
+
   },
 
 
@@ -123,7 +127,11 @@
     {"from": "LT", "input": "<", "to": "LOGICAL_OPERATOR"},
     {"from": "GT", "input": ">", "to": "LOGICAL_OPERATOR"},
 
-    {"from": "COLON", "input": "=", "to": "ASSIGN_OPERATOR"}
+    {"from": "COLON", "input": "=", "to": "ASSIGN_OPERATOR"},
+
+    {"from": "q0", "input": "[", "to": "LBRACKET"},
+    {"from": "q0", "input": "]", "to": "RBRACKET"}
+
 
   ]
 }
