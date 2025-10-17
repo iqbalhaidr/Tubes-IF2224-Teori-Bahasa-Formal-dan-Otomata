@@ -94,7 +94,8 @@
     { "from": "INT_LITRL", "input": "E", "to": "Acc_Exp_lit"},
     { "from": "INT_LITRL", "input": "e", "to": "Acc_Exp_lit"},
 
-    { "from": "INT_LITRL", "input": ".", "to": "RILL_LITRL"},
+    { "from": "INT_LITRL", "input": ".", "to": "INT_RILL_TRNST"},
+    { "from": "INT_RILL_TRNST", "input": "reg[0-9]", "to": "RILL_LITRL"},
     { "from": "RILL_LITRL", "input": "reg[0-9]", "to": "RILL_LITRL"},
     { "from": "RILL_LITRL", "input": "E", "to": "Acc_Exp_lit"},
     { "from": "RILL_LITRL", "input": "e", "to": "Acc_Exp_lit"},
