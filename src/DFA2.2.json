@@ -4,6 +4,7 @@
     "CHAR_LITERAL":     { "type": "CHAR_LITERAL" },
     "STRING_LITERAL":   { "type": "STRING_LITERAL" },
     "SEMICOLON":        { "type": "SEMICOLON" },
+    "COMMA":            { "type": "COMMA" },
     "COLON":            { "type": "COLON" },
     "DOT":              { "type": "DOT" },
     "LPARENTHESIS":    { "type": "LPARENTHESIS" },
