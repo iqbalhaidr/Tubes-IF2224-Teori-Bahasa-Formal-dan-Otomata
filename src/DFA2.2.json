@@ -60,6 +60,8 @@
     { "lexeme": "function",  "token": "KEYWORD" },
     { "lexeme": "const",     "token": "KEYWORD" },
     { "lexeme": "type",      "token": "KEYWORD" },
+    { "lexeme": "true",      "token": "KEYWORD" },
+    { "lexeme": "false",      "token": "KEYWORD" },
 
     { "lexeme": "div",   "token": "ARITHMETIC_OPERATOR" },
     { "lexeme": "mod",   "token": "ARITHMETIC_OPERATOR" },
