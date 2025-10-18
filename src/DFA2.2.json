@@ -4,6 +4,7 @@
     "CHAR_LITERAL":     { "type": "CHAR_LITERAL" },
     "STRING_LITERAL":   { "type": "STRING_LITERAL" },
     "SEMICOLON":        { "type": "SEMICOLON" },
+    "COMMA":            { "type": "COMMA" },
     "COLON":            { "type": "COLON" },
     "COMMA":            { "type": "COMMA" },
     "DOT":              { "type": "DOT" },
@@ -59,6 +60,8 @@
     { "lexeme": "function",  "token": "KEYWORD" },
     { "lexeme": "const",     "token": "KEYWORD" },
     { "lexeme": "type",      "token": "KEYWORD" },
+    { "lexeme": "true",      "token": "KEYWORD" },
+    { "lexeme": "false",      "token": "KEYWORD" },
 
     { "lexeme": "div",   "token": "ARITHMETIC_OPERATOR" },
     { "lexeme": "mod",   "token": "ARITHMETIC_OPERATOR" },
