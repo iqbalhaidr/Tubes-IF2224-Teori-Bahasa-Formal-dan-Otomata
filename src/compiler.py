@@ -1,4 +1,5 @@
 import json
+import sys
 
 def match_pattern(pattern, char):
     if pattern == "reg[A-Za-z0-9_]":
@@ -34,14 +35,14 @@ with open("src/DFA2.2.json", "r") as f:
     dfa = json.load(f)
 
 try :
-    file = input("Masukkan nama file sumber (contoh: test1): ")
-    with open(f"test/{file}.pas", "r") as f:
+    file = sys.argv[1]
+    with open(f"test/milestone-1/{file}.pas", "r") as f:
         pass
 except FileNotFoundError:
     print("File tidak ditemukan. Pastikan file berada di folder 'test' dan berekstensi .pas")
     exit()
 
-with open(f"test/{file}.pas", "r") as f:
+with open(f"test/milestone-1/{file}.pas", "r") as f:
     current_state = "q0"
     value = ""
     while True:
