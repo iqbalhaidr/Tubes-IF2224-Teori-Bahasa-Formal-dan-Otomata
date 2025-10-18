@@ -68,9 +68,7 @@
     
     { "lexeme": "and",   "token": "LOGICAL_OPERATOR" },
     { "lexeme": "or",   "token": "LOGICAL_OPERATOR" },
-    { "lexeme": "not",   "token": "LOGICAL_OPERATOR" },
-    { "lexeme": "shr",   "token": "LOGICAL_OPERATOR" },
-    { "lexeme": "shl",   "token": "LOGICAL_OPERATOR" }
+    { "lexeme": "not",   "token": "LOGICAL_OPERATOR" }
   ],
 
   "transition_func" : [
@@ -93,26 +91,29 @@
     {"from": "q0", "input": "(", "to": "LPARENTHESIS"},
     {"from": "q0", "input": ")", "to": "RPARENTHESIS"},
 
-    { "from": "q0", "input": "reg[A-Za-z_]", "to": "IDENTIFIER"},
-    { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9_]", "to": "IDENTIFIER" },
+    { "from": "q0", "input": "reg[A-Za-z]", "to": "IDENTIFIER"},
+    { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9]", "to": "IDENTIFIER" },
     
     { "from": "q0", "input": "reg[0-9]", "to": "INT_LITRL"},
     { "from": "INT_LITRL", "input": "reg[0-9]", "to": "INT_LITRL"},
     { "from": "INT_LITRL", "input": "E", "to": "Acc_Exp_lit"},
     { "from": "INT_LITRL", "input": "e", "to": "Acc_Exp_lit"},
+    { "from": "INT_LITRL", "input": "reg[a-z^e]", "to": "INV_IDENTIFIER"},
 
     { "from": "Acc_Exp_lit", "input": "+", "to": "Pos_exp"},
     { "from": "Acc_Exp_lit", "input": "reg[0-9]", "to": "Pos_exp"},
     { "from": "Acc_Exp_lit", "input": "-", "to": "Neg_exp"},
+    { "from": "Acc_Exp_lit", "input": "reg[A-Za-z]", "to": "INV_IDENTIFIER"},
 
     { "from": "Pos_exp", "input": "reg[0-9]", "to": "Pos_exp"},
     { "from": "Neg_exp", "input": "reg[0-9]", "to": "Neg_exp"},
 
+    { "from": "INV_IDENTIFIER", "input": "reg[A-Za-z0-9]", "to": "INV_IDENTIFIER"},
+
     {"from": "q0", "input": "+", "to": "ARITHMETIC_OPERATOR"},
     {"from": "q0", "input": "-", "to": "ARITHMETIC_OPERATOR"},
     {"from": "q0", "input": "/", "to": "ARITHMETIC_OPERATOR"},
-    {"from": "q0", "input": "*", "to": "STAR"},
-    {"from": "STAR", "input": "*", "to": "ARITHMETIC_OPERATOR"},
+    {"from": "q0", "input": "*", "to": "ARITHMETIC_OPERATOR"},
 
     {"from": "q0", "input": "=", "to": "EQ"},
     {"from": "q0", "input": "<", "to": "LT"},
@@ -120,9 +121,6 @@
     {"from": "LT", "input": "=", "to": "LT_X"},
     {"from": "q0", "input": ">", "to": "GT"},
     {"from": "GT", "input": "=", "to": "GT_E"},
-
-    {"from": "LT", "input": "<", "to": "LOGICAL_OPERATOR"},
-    {"from": "GT", "input": ">", "to": "LOGICAL_OPERATOR"},
 
     {"from": "COLON", "input": "=", "to": "ASSIGN_OPERATOR"},
 

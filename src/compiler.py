@@ -4,14 +4,16 @@ import sys
 def match_pattern(pattern, char):
     if pattern == "reg[A-Za-z0-9_]":
         return char.isalnum() or char == "_"
-    elif pattern == "reg[A-Za-z_]":
-        return char.isalpha() or char == "_"
+    elif pattern == "reg[A-Za-z0-9]":
+        return char.isalnum()
     elif pattern == "reg[A-Za-z]":
         return char.isalpha()
     elif pattern == "reg[0-9]":
         return char.isdigit()
     elif pattern == "reg[^']":
         return char != "'"
+    elif pattern == "reg[a-z^e]":
+        return char.isalpha() and char != "e"
     else:
         return char == pattern
 
@@ -72,6 +74,8 @@ with open(f"test/milestone-1/{file}.pas", "r") as f:
                 elif current_state in dfa["final_states"].keys() and value:
                     token_type = dfa["final_states"][current_state]["type"]
                     list_tokens.append(f"{token_type}({value})")
+                elif value: 
+                    list_tokens.append(f"<ERROR>({value})")
                 value = ""
                 current_state = "q0"
                 continue
