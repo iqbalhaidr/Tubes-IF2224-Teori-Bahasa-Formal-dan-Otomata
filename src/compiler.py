@@ -58,21 +58,23 @@ with open(f"test/milestone-1/{file}.pas", "r") as f:
                 list_tokens.append(f"{token_type}({value})")
             break
 
-        #memastikan spasi dalam string literal tidak di anggap sebagai pemisah antar state
-        if ch.isspace() and current_state not in dfa["LITERAL_STATES"]:
 
-            #jika hasil identifier ada dalam list keyword typenya jadi keyword
-            if check_keyword(value, list_tokens, dfa):
+        if ch.isspace():
+            #memastikan spasi dalam string literal tidak di anggap sebagai pemisah antar state
+            if temp is not None:
+                value += ch
+                continue 
+            else:
+                # jika spasi sebagai pemisah antar token
+                if check_keyword(value, list_tokens, dfa):
+                    value = ""
+                    current_state = "q0"
+                elif current_state in dfa["final_states"].keys() and value:
+                    token_type = dfa["final_states"][current_state]["type"]
+                    list_tokens.append(f"{token_type}({value})")
                 value = ""
                 current_state = "q0"
-
-            #jika spasi ada dan dianggap sebagai pemisah antar token
-            elif current_state in dfa["final_states"].keys() and value:
-                token_type = dfa["final_states"][current_state]["type"]
-                list_tokens.append(f"{token_type}({value})")
-            value = ""
-            current_state = "q0"
-            continue
+                continue
 
 
 
