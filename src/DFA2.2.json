@@ -6,7 +6,6 @@
     "SEMICOLON":        { "type": "SEMICOLON" },
     "COMMA":            { "type": "COMMA" },
     "COLON":            { "type": "COLON" },
-    "COMMA":            { "type": "COMMA" },
     "DOT":              { "type": "DOT" },
     "LPARENTHESIS":    { "type": "LPARENTHESIS" },
     "RPARENTHESIS":    { "type": "RPARENTHESIS" },
