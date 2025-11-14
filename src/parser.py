@@ -57,7 +57,7 @@ class Parser:
             print("Value error")
             sys.exit("Exiting program")
 
-        node = TreeNode(f"{self.SYM["type"]}({self.SYM["value"]})")
+        node = TreeNode(f'{self.SYM["type"]}({self.SYM["value"]})')
 
         # Baca SYM selanjutnya
         self.read()
