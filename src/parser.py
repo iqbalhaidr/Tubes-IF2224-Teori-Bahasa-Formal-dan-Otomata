@@ -174,6 +174,21 @@ class Parser:
         return node
 
     #8 <type> -> KEYWORD(integer)|KEYWORD(real)|KEYWORD(boolean)|KEYWORD(char)|array-type
+    def type(self):
+        node = TreeNode("<type>")
+        if self.SYM["type"] == "KEYWORD":
+            match self.SYM["value"]:
+                case "integer":
+                    node.add_child(self.accept(type="KEYWORD", value="integer"))
+                case "real":
+                    node.add_child(self.accept(type="KEYWORD", value="real"))
+                case "boolean":
+                    node.add_child(self.accept(type="KEYWORD", value="boolean"))
+                case "char":
+                    node.add_child(self.accept(type="KEYWORD", value="char"))
+        else:
+            node.add_child(self.array_type())
+        return node
 
     #9 <array-type> -> KEYWORD(larik) + LBRACKET + range + RBRACKET + KEYWORD(dari) + type
 
@@ -198,7 +213,21 @@ class Parser:
     
 
     #13 <function-declaration> -> KEYWORD(fungsi) + IDENTIFIER + (formal-parameter-list)? + COLON + type + SEMICOLON + block + SEMICOLON
-    
+    def function_declaration(self):
+        node = TreeNode("<function-declaration>")
+        node.add_child(self.accept(type="KEYWORD", value="fungsi"))
+        node.add_child(self.accept(type="IDENTIFIER"))
+
+        if self.SYM["type"] == "LPARENTHESIS":
+            node.add_child(self.formal_parameter_list())
+
+        node.add_child(self.accept(type="COLON", value=":"))
+        node.add_child(self.type())
+        node.add_child(self.accept(type="SEMICOLON", value=";"))
+        node.add_child(self.block())
+        node.add_child(self.accept(type="SEMICOLON", value=";"))
+        return node
+
     #14 <formal-parameter-list> -> LPARENTHESIS + parameter-group (SEMICOLON + parameter-group)* + RPARENTHESIS
     def formal_parameter_list(self):
         node = TreeNode("<formal-parameter-list>")
@@ -301,10 +330,25 @@ class Parser:
         return node
 
     #21 <procedure/function-call> -> IDENTIFIER + (LPARENTHESIS + parameter-list + RPARENTHESIS)
+    def procedure_function_call(self):
+        node = TreeNode("<procedure/function-call>")
+        node.add_child(self.accept(type="IDENTIFIER"))
+
+        node.add_child(self.accept(type="LPARENTHESIS"))
+        node.add_child(self.parameter_list())
+        node.add_child(self.accept(type="RPARENTHESIS"))
+        return node
     
     #22 <parameter-list> -> expression + (COMMA + expression)*
     
     #23 <expression> -> simple-expression + (relational-operator + simple-expression)?
+    def expression(self):
+        node = TreeNode("<expression>")
+        node.add_child(self.simple_expression())
+        if self.SYM["type"] == "RELATIONAL_OPERATOR":
+            node.add_child(self.accept(type="RELATIONAL_OPERATOR"))
+            node.add_child(self.simple_expression())
+        return node
     
     #24 <simple-expression> -> (ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? + term + (additive-operator + term)*
     def simple_expression(self):
@@ -337,8 +381,48 @@ class Parser:
         return node
 
     #26 <factor> -> IDENTIFIER|NUMBER|CHAR_LITERAL|STRING_LITERAL|(LPARENTHESIS + expression + RPARENTHESIS)|LOGICAL_OPERATOR(tidak) + factor|function-call
+    def factor(self):
+        node = TreeNode("<factor>")
+
+        match self.SYM:
+            case {"type": "IDENTIFIER"}:
+                # Ngebedain function call (IDENTIFIER+LPARENTHESIS...) sama IDENTIFIER biasa
+                if self.peek() and self.peek()["type"] == "LPARENTHESIS":
+                    node.add_child(self.procedure_function_call())
+                else:
+                    node.add_child(self.accept(type="IDENTIFIER"))
+            case {"type": "NUMBER"}:
+                node.add_child(self.accept(type="NUMBER"))
+            case {"type": "CHAR_LITERAL"}:
+                node.add_child(self.accept(type="CHAR_LITERAL"))
+            case {"type": "STRING_LITERAL"}:
+                node.add_child(self.accept(type="STRING_LITERAL"))
+            case {"type": "LPARENTHESIS"}:
+                node.add_child(self.accept(type="LPARENTHESIS"))
+                node.add_child(self.expression())
+                node.add_child(self.accept(type="RPARENTHESIS"))
+            case {"type": "LOGICAL_OPERATOR", "value": "tidak"}:
+                node.add_child(self.accept(type="LOGICAL_OPERATOR", value="tidak"))
+                node.add_child(self.factor())
+        return node
 
     #28 <relational-operator> -> =|<>|<|<=|>|>=
+    def relational_operator(self):
+        node = TreeNode("<relational-operator>")
+        match self.SYM:
+            case {"type": "RELATIONAL_OPERATOR", "value": "="}:
+                node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="="))
+            case {"type": "RELATIONAL_OPERATOR", "value": "<>"}:
+                node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="<>"))
+            case {"type": "RELATIONAL_OPERATOR", "value": "<"}:
+                node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="<"))
+            case {"type": "RELATIONAL_OPERATOR", "value": "<="}:
+                node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="<="))
+            case {"type": "RELATIONAL_OPERATOR", "value": ">"}:
+                node.add_child(self.accept(type="RELATIONAL_OPERATOR", value=">"))
+            case {"type": "RELATIONAL_OPERATOR", "value": ">="}:
+                node.add_child(self.accept(type="RELATIONAL_OPERATOR", value=">="))
+        return node
     
     #29 <additive-operator> -> +|-|atau
     
