@@ -113,7 +113,7 @@ class Parser:
             
         # (var-declaration)*
         while self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "variabel":
-            node.add_child(self.variabel_declaration())
+            node.add_child(self.var_declaration())
         
         # (subprogram-declaration)*
         while self.SYM["type"] == "KEYWORD" and (self.SYM["value"] == "prosedur" or self.SYM["value"] == "fungsi"):
@@ -209,9 +209,10 @@ class Parser:
     def array_type(self):
         node = TreeNode("<array-type>")
 
-        node.add_child(self.accept(type="Keyword", value="larik"))
+        node.add_child(self.accept(type="KEYWORD", value="larik"))
         node.add_child(self.accept(type="LBRACKET", value="("))
-        node.add_child(self.range()) 
+        node.add_child(self.range())
+        node.add_child(self.accept(type="RBRACKET", value=")"))
         node.add_child(self.accept(type="KEYWORD", value="dari"))
         node.add_child(self.type())
 
