@@ -1,0 +1,5 @@
+program TestMinimal;
+
+mulai
+
+selesai.

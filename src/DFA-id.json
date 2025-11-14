@@ -1,0 +1,135 @@
+{
+  "start_state": "q0",
+  "final_states": {
+    "CHAR_LITERAL":     { "type": "CHAR_LITERAL" },
+    "STRING_LITERAL":   { "type": "STRING_LITERAL" },
+    "SEMICOLON":        { "type": "SEMICOLON" },
+    "COMMA":            { "type": "COMMA" },
+    "COLON":            { "type": "COLON" },
+    "DOT":              { "type": "DOT" },
+    "LPARENTHESIS":    { "type": "LPARENTHESIS" },
+    "RPARENTHESIS":    { "type": "RPARENTHESIS" },
+    "IDENTIFIER":       { "type": "IDENTIFIER" },
+
+    "INT_LITRL":        { "type": "NUMBER" },
+    "Pos_exp":          { "type": "NUMBER" },
+    "Neg_exp":          { "type": "NUMBER" },
+
+    "ARITHMETIC_OPERATOR":	{"type": "ARITHMETIC_OPERATOR"},
+    "STAR": 		            {"type": "ARITHMETIC_OPERATOR"},
+
+    "EQ":               {"type": "RELATIONAL_OPERATOR"},
+    "LT":               {"type": "RELATIONAL_OPERATOR"},
+    "LT_X":             {"type": "RELATIONAL_OPERATOR"},
+    "GT":               {"type": "RELATIONAL_OPERATOR"},
+    "GT_E":             {"type": "RELATIONAL_OPERATOR"},
+
+    "LOGICAL_OPERATOR": {"type": "LOGICAL_OPERATOR"},
+
+    "ASSIGN_OPERATOR":  {"type": "ASSIGN_OPERATOR"},
+
+    "LBRACKET":  {"type": "LBRACKET"},
+    "RBRACKET":  {"type": "RBRACKET"}
+
+  },
+
+
+  "LITERAL_STATES" : ["q1", "q2", "q4", "q5", "STRING_LITERAL", "CHAR_LITERAL"],
+
+  "reserved_word": [
+    { "lexeme": "program",   "token": "KEYWORD" },
+    { "lexeme": "variabel",       "token": "KEYWORD" },
+    { "lexeme": "mulai",     "token": "KEYWORD" },
+    { "lexeme": "selesai",       "token": "KEYWORD" },
+    { "lexeme": "jika",        "token": "KEYWORD" },
+    { "lexeme": "maka",      "token": "KEYWORD" },
+    { "lexeme": "selain-itu",      "token": "KEYWORD" },
+    { "lexeme": "selama",     "token": "KEYWORD" },
+    { "lexeme": "lakukan",        "token": "KEYWORD" },
+    { "lexeme": "untuk",       "token": "KEYWORD" },
+    { "lexeme": "ke",        "token": "KEYWORD" },
+    { "lexeme": "turun-ke",    "token": "KEYWORD" },
+    { "lexeme": "integer",   "token": "KEYWORD" },
+    { "lexeme": "real",      "token": "KEYWORD" },
+    { "lexeme": "boolean",   "token": "KEYWORD" },
+    { "lexeme": "char",      "token": "KEYWORD" },
+    { "lexeme": "larik",     "token": "KEYWORD" },
+    { "lexeme": "dari",        "token": "KEYWORD" },
+    { "lexeme": "prosedur", "token": "KEYWORD" },
+    { "lexeme": "fungsi",  "token": "KEYWORD" },
+    { "lexeme": "konstanta",     "token": "KEYWORD" },
+    { "lexeme": "tipe",      "token": "KEYWORD" },
+    { "lexeme": "true",      "token": "KEYWORD" },
+    { "lexeme": "false",      "token": "KEYWORD" },
+    { "lexeme": "sampai",      "token": "KEYWORD" },
+    { "lexeme": "ulangi",      "token": "KEYWORD" },
+    { "lexeme": "rekaman",      "token": "KEYWORD" },
+    { "lexeme": "kasus",      "token": "KEYWORD" },
+
+    { "lexeme": "bagi",   "token": "ARITHMETIC_OPERATOR" },
+    { "lexeme": "mod",   "token": "ARITHMETIC_OPERATOR" },
+    
+    { "lexeme": "dan",   "token": "LOGICAL_OPERATOR" },
+    { "lexeme": "atau",   "token": "LOGICAL_OPERATOR" },
+    { "lexeme": "tidak",   "token": "LOGICAL_OPERATOR" }
+  ],
+
+  "transition_func" : [
+    { "from": "q0", "input": "'", "to": "q1" },
+    { "from": "q1", "input": "'", "to": "CHAR_LITERAL" },
+    { "from": "q1", "input": "reg[^']", "to": "q2" },
+    { "from": "q2", "input": "'", "to": "CHAR_LITERAL" },
+    { "from": "q2", "input": "reg[^']", "to": "q4" },
+    { "from": "q4", "input":"reg[^']", "to": "q4" },
+    { "from": "q4", "input": "'", "to": "STRING_LITERAL" },
+    { "from": "CHAR_LITERAL", "input": "'", "to": "q5" },
+    { "from": "q5", "input": "'", "to": "STRING_LITERAL" },
+    { "from": "q5", "input": "reg[^']", "to": "q4" },
+    { "from": "STRING_LITERAL", "input": "'", "to": "q5" },
+
+    { "from": "q0", "input": ";", "to": "SEMICOLON" },
+    { "from": "q0", "input": ",", "to": "COMMA"},
+    {"from": "q0", "input": ":", "to": "COLON"},
+    {"from": "q0", "input": ".", "to": "DOT"},
+    {"from": "q0", "input": "(", "to": "LPARENTHESIS"},
+    {"from": "q0", "input": ")", "to": "RPARENTHESIS"},
+
+    { "from": "q0", "input": "reg[A-Za-z]", "to": "IDENTIFIER"},
+    { "from": "IDENTIFIER", "input": "reg[A-Za-z0-9]", "to": "IDENTIFIER" },
+    
+    { "from": "q0", "input": "reg[0-9]", "to": "INT_LITRL"},
+    { "from": "INT_LITRL", "input": "reg[0-9]", "to": "INT_LITRL"},
+    { "from": "INT_LITRL", "input": "E", "to": "Acc_Exp_lit"},
+    { "from": "INT_LITRL", "input": "e", "to": "Acc_Exp_lit"},
+    { "from": "INT_LITRL", "input": "reg[a-z^e]", "to": "INV_IDENTIFIER"},
+
+    { "from": "Acc_Exp_lit", "input": "+", "to": "Pos_exp"},
+    { "from": "Acc_Exp_lit", "input": "reg[0-9]", "to": "Pos_exp"},
+    { "from": "Acc_Exp_lit", "input": "-", "to": "Neg_exp"},
+    { "from": "Acc_Exp_lit", "input": "reg[A-Za-z]", "to": "INV_IDENTIFIER"},
+
+    { "from": "Pos_exp", "input": "reg[0-9]", "to": "Pos_exp"},
+    { "from": "Neg_exp", "input": "reg[0-9]", "to": "Neg_exp"},
+
+    { "from": "INV_IDENTIFIER", "input": "reg[A-Za-z0-9]", "to": "INV_IDENTIFIER"},
+
+    {"from": "q0", "input": "+", "to": "ARITHMETIC_OPERATOR"},
+    {"from": "q0", "input": "-", "to": "ARITHMETIC_OPERATOR"},
+    {"from": "q0", "input": "/", "to": "ARITHMETIC_OPERATOR"},
+    {"from": "q0", "input": "*", "to": "ARITHMETIC_OPERATOR"},
+
+    {"from": "q0", "input": "=", "to": "EQ"},
+    {"from": "q0", "input": "<", "to": "LT"},
+    {"from": "LT", "input": ">", "to": "LT_X"},
+    {"from": "LT", "input": "=", "to": "LT_X"},
+    {"from": "q0", "input": ">", "to": "GT"},
+    {"from": "GT", "input": "=", "to": "GT_E"},
+
+    {"from": "COLON", "input": "=", "to": "ASSIGN_OPERATOR"},
+
+    {"from": "q0", "input": "[", "to": "LBRACKET"},
+    {"from": "q0", "input": "]", "to": "RBRACKET"}
+
+
+  ]
+}

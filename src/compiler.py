@@ -1,5 +1,6 @@
 import json
 import sys
+from parser import Parser
 
 def match_pattern(pattern, char):
     if pattern == "reg[A-Za-z0-9_]":
@@ -33,18 +34,18 @@ def check_keyword(stringValue, list_tok, dfa):
 dfa = None
 list_tokens = []
 
-with open("src/DFA2.2.json", "r") as f:
+with open("src/DFA-id.json", "r") as f:
     dfa = json.load(f)
 
 try :
     file = sys.argv[1]
-    with open(f"test/milestone-1/{file}.pas", "r") as f:
+    with open(f"test/milestone-2/{file}.pas", "r") as f:
         pass
 except FileNotFoundError:
     print("File tidak ditemukan. Pastikan file berada di folder 'test' dan berekstensi .pas")
     exit()
 
-with open(f"test/milestone-1/{file}.pas", "r") as f:
+with open(f"test/milestone-2/{file}.pas", "r") as f:
     current_state = "q0"
     value = ""
     while True:
@@ -102,3 +103,7 @@ with open(f"test/milestone-1/{file}.pas", "r") as f:
 
 for token in list_tokens:
     print(token)
+
+print("============ Parse Output ============")
+p = Parser(list_tokens)
+p.parse()
