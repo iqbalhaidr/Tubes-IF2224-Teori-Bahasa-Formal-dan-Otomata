@@ -50,19 +50,11 @@ class Parser:
         if (self.SYM["type"] != type):
             # TODO: Add more error details "error on line ... expected bla bla"
             print("Type error")
-            print("type:", self.SYM["type"])
-            print("value:", self.SYM["value"])
-            print("expected type:", type)
-            print(f"Expected value: {value}")
             sys.exit("Exiting program")
         
         if (value and self.SYM["value"] != value):
             # TODO: Add more error details "error on line ... expected bla bla"
             print("Value error")
-            print("type:", self.SYM["type"])
-            print("value:", self.SYM["value"])
-            print("expected type:", type)
-            print(f"Expected value: {value}")
             sys.exit("Exiting program")
 
         node = TreeNode(f"{self.SYM["type"]}({self.SYM["value"]})")
