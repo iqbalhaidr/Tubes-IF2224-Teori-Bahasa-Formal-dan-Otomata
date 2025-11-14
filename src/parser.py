@@ -113,7 +113,7 @@ class Parser:
             
         # (var-declaration)*
         while self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "variabel":
-            node.add_child(self.variabel_declaration())
+            node.add_child(self.var_declaration())
         
         # (subprogram-declaration)*
         while self.SYM["type"] == "KEYWORD" and (self.SYM["value"] == "prosedur" or self.SYM["value"] == "fungsi"):
@@ -140,6 +140,36 @@ class Parser:
         return node
 
     #5 <type-declaration> -> KEYWORD(tipe) + (IDENTIFIER = type-definition + SEMICOLON)+
+    def type_declaration(self):
+        node = TreeNode("<type-declaration>")
+
+        node.add_child(self.accept(type="KEYWORD", value="tipe"))
+
+        while True:
+            node.add_child(self.accept(type="IDENTIFIER"))
+            node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="="))
+
+            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ("integer", "real", "boolean", "char"):
+                node.add_child(self.accept("KEYWORD"))
+            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "array":
+                node.add_child(self.array_type())
+            elif self.SYM["type"] == "IDENTIFIER":
+                node.add_child(self.accept("IDENTIFIER"))
+            else:
+                print(f"Syntax error: expected type-definition, got {self.SYM['value']}")
+                sys.exit()
+
+            node.add_child(self.accept(type="SEMICOLON", value=";"))
+
+            if self.SYM["type"] != "IDENTIFIER":
+                break
+
+        return node
+
+
+                
+        
+
 
     #6 <var-declaration> -> KEYWORD(variabel) + (identifier-list + COLON + type + SEMICOLON)+
     def var_declaration(self):
@@ -194,7 +224,18 @@ class Parser:
         return node
 
     #9 <array-type> -> KEYWORD(larik) + LBRACKET + range + RBRACKET + KEYWORD(dari) + type
+    def array_type(self):
+        node = TreeNode("<array-type>")
 
+        node.add_child(self.accept(type="KEYWORD", value="larik"))
+        node.add_child(self.accept(type="LBRACKET", value="("))
+        node.add_child(self.range())
+        node.add_child(self.accept(type="RBRACKET", value=")"))
+        node.add_child(self.accept(type="KEYWORD", value="dari"))
+        node.add_child(self.type())
+
+        return node
+    
     #10 <range> -> expression + RANGE_OPERATOR(..) + expression
     def range(self):
         node = TreeNode("<range>")
@@ -335,6 +376,19 @@ class Parser:
         return node
 
     #18 <if-statement> -> KEYWORD(jika) + expression + KEYWORD(maka) + statement + (KEYWORD(selain-itu) + statement)?
+    def if_statement(self):
+        node = TreeNode("<if-statement>")
+        node.add_child(self.accept(type="KEYWORD", value="jika"))
+        node.add_child(self.expression())
+        node.add_child(self.accept(type="KEYWORD", value="maka"))
+        node.add_child(self.statement())
+
+
+        if(self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "selain-itu"):
+            node.add_child(self.accept(type="KEYWORD", value="selain-itu"))
+            node.add_child(self.statement())
+
+        return node
     
     #19 <while-statement> -> KEYWORD(selama) + expression + KEYWORD(lakukan) + statement
     def while_statement(self):
@@ -380,7 +434,17 @@ class Parser:
         return node
     
     #22 <parameter-list> -> expression + (COMMA + expression)*
-    
+    def parameter_list(self):
+        node = TreeNode("<parameter-list>")
+
+        node.add_child(self.expression())
+
+        while self.SYM["type"] == "COMMA":
+            node.add_child(self.accept(type="COMMA"))
+            node.add_child(self.expression())
+
+        return node
+
     #23 <expression> -> simple-expression + (relational-operator + simple-expression)?
     def expression(self):
         node = TreeNode("<expression>")
@@ -467,9 +531,37 @@ class Parser:
         return node
     
     #29 <additive-operator> -> +|-|atau
+    def additive_operator(self):
+        
+        node = TreeNode("<additive-operator>")
+
+        if(self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "+"):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="+"))
+        elif( (self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "-") ):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="-"))
+        elif((self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "atau")):
+            node.add_child(self.accept(type="LOGICAL_OPERATOR", value="atau"))
+        
+        return node
+
     
     #30 <multiplicative-operator> -> *|/|bagi|mod|dan
+    def multiplicative_operator(self):
+        node = TreeNode("<multiplicative-operator>")
 
+        if(self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "*"):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="*"))
+        elif( (self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "/") ):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="/"))
+        elif((self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "bagi")):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="bagi"))
+        elif((self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "mod")):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="mod"))
+        elif((self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "dan")):
+            node.add_child(self.accept(type="LOGICAL_OPERATOR", value="dan"))
+        
+        return node
+     
     #31 <statement>
     def statement(self):
         node = TreeNode("<statement>")
@@ -477,7 +569,8 @@ class Parser:
         match self.SYM:
             case {"type": "IDENTIFIER"}:
                 # Kita gaskan jadi LL2 lah anjeng. ini intinya cek type next SYM tanpa increment next_SYM_idx
-                next_SYM_type = self.list_token[self.next_SYM_idx].split('(')[0] if (self.next_SYM_idx < len(self.list_token)) else None
+                next_SYM = self.peek()
+                next_SYM_type = next_SYM["type"] if next_SYM else None
                 if next_SYM_type == "ASSIGN_OPERATOR":
                     node.add_child(self.assignment_statement())
                 elif next_SYM_type == "LPARENTHESIS":
@@ -502,6 +595,7 @@ class Parser:
         
         return node
 
+    # TODO: AYO COK YANG NGERJAIN INI DAPAT PAHALA
     #32 <case-statement>
 
     #33 <repeat-statement>
