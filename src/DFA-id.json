@@ -127,6 +127,8 @@
 
     {"from": "COLON", "input": "=", "to": "ASSIGN_OPERATOR"},
 
+    {"from": "DOT", "input": ".", "to": "RANGE_OPERATOR"},
+
     {"from": "q0", "input": "[", "to": "LBRACKET"},
     {"from": "q0", "input": "]", "to": "RBRACKET"}
 

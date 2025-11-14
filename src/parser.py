@@ -160,7 +160,18 @@ class Parser:
     #11 <subprogram-declaration> -> procedure-declaration|function-declaration
 
     #12 <procedure-declaration> -> KEYWORD(prosedur) + IDENTIFIER + (formal-parameter-list)? + SEMICOLON + block + SEMICOLON
-    
+    def procedure_declaration(self):
+        node = TreeNode("<procedure-declaration>")
+
+        node.add_child(self.accept(type="KEYWORD", value="prosedur"))
+        node.add_child(self.accept(type="IDENTIFIER"))
+        if self.SYM["type"] == "LPARENTHESIS" and self.SYM["value"] == "(":
+            node.add_child(self.formal_parameter_list())
+        node.add_child(self.accept(type="SEMICOLON", value=";"))
+        node.add_child(self.declaration_part())
+        node.add_child(self.compound_statement())
+        node.add_child(self.accept(type="SEMICOLON", value=";"))
+        return node
 
     #13 <function-declaration> -> KEYWORD(fungsi) + IDENTIFIER + (formal-parameter-list)? + COLON + type + SEMICOLON + block + SEMICOLON
     
@@ -182,7 +193,6 @@ class Parser:
     
     #19 <while-statement> -> KEYWORD(selama) + expression + KEYWORD(lakukan) + statement
 
-    # TODO: Statement??
     #20 <for-statement> -> KEYWORD(untuk) + IDENTIFIER + ASSIGN_OPERATOR + expression + (KEYWORD(ke)/KEYWORD(turun-ke)) + expression + KEYWORD(lakukan ) + statement
     def for_statement(self):
         node = TreeNode("<for-statement>")
@@ -197,11 +207,12 @@ class Parser:
                 node.add_child(self.accept(type="KEYWORD", value="ke"))
             case {"type": "KEYWORD", "value": "turun-ke"}:
                 node.add_child(self.accept(type="KEYWORD", value="turun-ke"))
+            case _:
+                sys.exit("Error: Expected 'ke' or 'turun-ke'! (<statement>) Exiting program")
 
         node.add_child(self.expression())
         node.add_child(self.accept(type="KEYWORD", value="lakukan"))
-
-        # TODO: Statement WTF IS THIS SHIT
+        node.add_child(self.statement())
         
         return node
 
@@ -232,3 +243,46 @@ class Parser:
     #29 <additive-operator> -> +|-|atau
     
     #30 <multiplicative-operator> -> *|/|bagi|mod|dan
+
+    #31 <statement>
+    def statement(self):
+        node = TreeNode("<statement>")
+
+        match self.SYM:
+            case {"type": "IDENTIFIER"}:
+                # Kita gaskan jadi LL2 lah anjeng. ini intinya cek type next SYM tanpa increment next_SYM_idx
+                next_SYM_type = self.list_token[self.next_SYM_idx].split('(')[0] if (self.next_SYM_idx < len(self.list_token)) else None
+                if next_SYM_type == "ASSIGN_OPERATOR":
+                    node.add_child(self.assignment_statement())
+                elif next_SYM_type == "LPARENTHESIS":
+                    node.add_child(self.procedure_function_call())
+                else:
+                    sys.exit("Error: Expected ':=' or '(' after identifier! (<statement>) Exiting program")
+            case {"type": "KEYWORD", "value": "mulai"}:
+                node.add_child(self.compound_statement())
+            case {"type": "KEYWORD", "value": "jika"}:
+                node.add_child(self.if_statement())
+            case {"type": "KEYWORD", "value": "kasus"}:
+                # TODO: Implementasi case_statement()
+                sys.exit("<case-statement> belum diimplmentasikan woy! Exiting program")
+            case {"type": "KEYWORD", "value": "selama"}:
+                node.add_child(self.while_statement())
+            case {"type": "KEYWORD", "value": "ulangi"}:
+                node.add_child(self.repeat_statement())
+            case {"type": "KEYWORD", "value": "untuk"}:
+                node.add_child(self.for_statement())
+            case _:
+                pass
+        
+        return node
+
+    #32 <case-statement>
+
+    #33 <repeat-statement>
+    def repeat_statement(self):
+        node = TreeNode("<repeat-statement>")
+        node.add_child(self.accept(type="KEYWORD", value="ulangi"))
+        node.add_child(self.statement_list())
+        node.add_child(self.accept(type="KEYWORD", value="sampai"))
+        node.add_child(self.expression())
+        return node
