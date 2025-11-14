@@ -41,6 +41,7 @@
     { "lexeme": "variabel",       "token": "KEYWORD" },
     { "lexeme": "mulai",     "token": "KEYWORD" },
     { "lexeme": "selesai",       "token": "KEYWORD" },
+    { "lexeme": "akhir",       "token": "KEYWORD" },
     { "lexeme": "jika",        "token": "KEYWORD" },
     { "lexeme": "maka",      "token": "KEYWORD" },
     { "lexeme": "selainitu",      "token": "KEYWORD" },
