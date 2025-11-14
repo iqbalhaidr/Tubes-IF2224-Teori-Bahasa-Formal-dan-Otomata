@@ -210,7 +210,18 @@ class Parser:
         return node
 
     #12 <procedure-declaration> -> KEYWORD(prosedur) + IDENTIFIER + (formal-parameter-list)? + SEMICOLON + block + SEMICOLON
-    
+    def procedure_declaration(self):
+        node = TreeNode("<procedure-declaration>")
+
+        node.add_child(self.accept(type="KEYWORD", value="prosedur"))
+        node.add_child(self.accept(type="IDENTIFIER"))
+        if self.SYM["type"] == "LPARENTHESIS" and self.SYM["value"] == "(":
+            node.add_child(self.formal_parameter_list())
+        node.add_child(self.accept(type="SEMICOLON", value=";"))
+        node.add_child(self.declaration_part())
+        node.add_child(self.compound_statement())
+        node.add_child(self.accept(type="SEMICOLON", value=";"))
+        return node
 
     #13 <function-declaration> -> KEYWORD(fungsi) + IDENTIFIER + (formal-parameter-list)? + COLON + type + SEMICOLON + block + SEMICOLON
     def function_declaration(self):
@@ -261,18 +272,25 @@ class Parser:
     #16 <statement-list> -> statement + (SEMICOLON + statement)*
     def statement_list(self):
         node = TreeNode("<statement-list>")
-        self.peek()["type"], self.peek()["value"]
+        peektype = self.peek()["type"]
+        peekvalue = self.peek()["value"]
 
-        if self.SYM["type"] == "IDENTIFIER":
+        if peektype == "IDENTIFIER":
             node.add_child(self.assignment_statement())
-        elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "jika":
+        elif peektype == "KEYWORD" and peekvalue == "jika":
             node.add_child(self.if_statement()) 
-        elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "selama":
+        elif peektype == "KEYWORD" and peekvalue == "selama":
             node.add_child(self.while_statement())
-        elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "untuk":
+        elif peektype == "KEYWORD" and peekvalue == "untuk":
             node.add_child(self.for_statement())
-        elif self.SYM["type"] == "IDENTIFIER":
+        elif peektype == "IDENTIFIER":
             node.add_child(self.procedure_function_call())
+        elif peektype == "KEYWORD" and peekvalue == "mulai":
+            node.add_child(self.compound_statement())
+        elif peektype == "KEYWORD" and peekvalue == "fungsi":
+            node.add_child(self.function_declaration())
+        elif peektype == "KEYWORD" and peekvalue == "prosedur":
+            node.add_child(self.procedure_declaration())
         else:
             # tidak boleh kosong
             print("Empty statement list encountered") 
@@ -280,17 +298,25 @@ class Parser:
 
         while self.SYM["type"] == "SEMICOLON":
             node.add_child(self.accept(type="SEMICOLON"))
-            self.peek()["type"], self.peek()["value"]
-            if self.SYM["type"] == "IDENTIFIER":
+            peektype = self.peek()["type"]
+            peekvalue = self.peek()["value"]
+
+            if peektype == "IDENTIFIER":
                 node.add_child(self.assignment_statement())
-            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "jika":
-                node.add_child(self.if_statement())
-            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "selama":
+            elif peektype == "KEYWORD" and peekvalue == "jika":
+                node.add_child(self.if_statement()) 
+            elif peektype == "KEYWORD" and peekvalue == "selama":
                 node.add_child(self.while_statement())
-            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "untuk":
+            elif peektype == "KEYWORD" and peekvalue == "untuk":
                 node.add_child(self.for_statement())
-            elif self.SYM["type"] == "IDENTIFIER":
-                node.add_child(self.procedure_function_call())  
+            elif peektype == "IDENTIFIER":
+                node.add_child(self.procedure_function_call())
+            elif peektype == "KEYWORD" and peekvalue == "mulai":
+                node.add_child(self.compound_statement())
+            elif peektype == "KEYWORD" and peekvalue == "fungsi":
+                node.add_child(self.function_declaration())
+            elif peektype == "KEYWORD" and peekvalue == "prosedur":
+                node.add_child(self.procedure_declaration())  
             
         return node
 
@@ -306,7 +332,6 @@ class Parser:
     
     #19 <while-statement> -> KEYWORD(selama) + expression + KEYWORD(lakukan) + statement
 
-    # TODO: Statement??
     #20 <for-statement> -> KEYWORD(untuk) + IDENTIFIER + ASSIGN_OPERATOR + expression + (KEYWORD(ke)/KEYWORD(turun-ke)) + expression + KEYWORD(lakukan ) + statement
     def for_statement(self):
         node = TreeNode("<for-statement>")
@@ -321,11 +346,12 @@ class Parser:
                 node.add_child(self.accept(type="KEYWORD", value="ke"))
             case {"type": "KEYWORD", "value": "turun-ke"}:
                 node.add_child(self.accept(type="KEYWORD", value="turun-ke"))
+            case _:
+                sys.exit("Error: Expected 'ke' or 'turun-ke'! (<statement>) Exiting program")
 
         node.add_child(self.expression())
         node.add_child(self.accept(type="KEYWORD", value="lakukan"))
-
-        # TODO: Statement WTF IS THIS SHIT
+        node.add_child(self.statement())
         
         return node
 
@@ -427,3 +453,46 @@ class Parser:
     #29 <additive-operator> -> +|-|atau
     
     #30 <multiplicative-operator> -> *|/|bagi|mod|dan
+
+    #31 <statement>
+    def statement(self):
+        node = TreeNode("<statement>")
+
+        match self.SYM:
+            case {"type": "IDENTIFIER"}:
+                # Kita gaskan jadi LL2 lah anjeng. ini intinya cek type next SYM tanpa increment next_SYM_idx
+                next_SYM_type = self.list_token[self.next_SYM_idx].split('(')[0] if (self.next_SYM_idx < len(self.list_token)) else None
+                if next_SYM_type == "ASSIGN_OPERATOR":
+                    node.add_child(self.assignment_statement())
+                elif next_SYM_type == "LPARENTHESIS":
+                    node.add_child(self.procedure_function_call())
+                else:
+                    sys.exit("Error: Expected ':=' or '(' after identifier! (<statement>) Exiting program")
+            case {"type": "KEYWORD", "value": "mulai"}:
+                node.add_child(self.compound_statement())
+            case {"type": "KEYWORD", "value": "jika"}:
+                node.add_child(self.if_statement())
+            case {"type": "KEYWORD", "value": "kasus"}:
+                # TODO: Implementasi case_statement()
+                sys.exit("<case-statement> belum diimplmentasikan woy! Exiting program")
+            case {"type": "KEYWORD", "value": "selama"}:
+                node.add_child(self.while_statement())
+            case {"type": "KEYWORD", "value": "ulangi"}:
+                node.add_child(self.repeat_statement())
+            case {"type": "KEYWORD", "value": "untuk"}:
+                node.add_child(self.for_statement())
+            case _:
+                pass
+        
+        return node
+
+    #32 <case-statement>
+
+    #33 <repeat-statement>
+    def repeat_statement(self):
+        node = TreeNode("<repeat-statement>")
+        node.add_child(self.accept(type="KEYWORD", value="ulangi"))
+        node.add_child(self.statement_list())
+        node.add_child(self.accept(type="KEYWORD", value="sampai"))
+        node.add_child(self.expression())
+        return node
