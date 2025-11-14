@@ -114,18 +114,53 @@ class Parser:
     #5 <type-declaration> -> KEYWORD(tipe) + (IDENTIFIER = type-definition + SEMICOLON)+
 
     #6 <var-declaration> -> KEYWORD(variabel) + (identifier-list + COLON + type + SEMICOLON)+
+    def var_declaration(self):
+        node = TreeNode("<var-declaration>")
+
+        node.add_child(self.accept(type="KEYWORD", value="variabel"))
+        
+        # pastikan minimal 1 kali kemunculan (identifier-list + COLON + type + SEMICOLON)
+        node.add_child(self.identifier_list())
+        node.add_child(self.accept(type="COLON", value=":"))
+        node.add_child(self.type())
+        node.add_child(self.accept(type="SEMICOLON", value=";"))
+
+        while self.SYM["type"] == "IDENTIFIER":
+            node.add_child(self.identifier_list())
+            node.add_child(self.accept(type="COLON", value=":"))
+            node.add_child(self.type())
+            node.add_child(self.accept(type="SEMICOLON", value=";"))
+
+        return node
+
 
     #7 <identifier-list> -> IDENTIFIER (COMMA + IDENTIFIER)*
+    def identifier_list(self):
+        node = TreeNode("<identifier-list>")
+
+        node.add_child(self.accept(type="IDENTIFIER"))
+        while self.SYM["type"] == "COMMA" and self.SYM["value"] == ",":
+            node.add_child(self.accept(type="COMMA", value=","))
+            node.add_child(self.accept(type="IDENTIFIER"))
+        
+        return node
 
     #8 <type> -> KEYWORD(integer)|KEYWORD(real)|KEYWORD(boolean)|KEYWORD(char)|array-type
 
     #9 <array-type> -> KEYWORD(larik) + LBRACKET + range + RBRACKET + KEYWORD(dari) + type
 
     #10 <range> -> expression + RANGE_OPERATOR(..) + expression
+    def range(self):
+        node = TreeNode("<range>")
+        node.add_child(self.expression())
+        node.add_child(self.accept(type="RANGE_OPERATOR", value=".."))
+        node.add_child(self.expression())
+        return node
 
     #11 <subprogram-declaration> -> procedure-declaration|function-declaration
 
     #12 <procedure-declaration> -> KEYWORD(prosedur) + IDENTIFIER + (formal-parameter-list)? + SEMICOLON + block + SEMICOLON
+    
 
     #13 <function-declaration> -> KEYWORD(fungsi) + IDENTIFIER + (formal-parameter-list)? + COLON + type + SEMICOLON + block + SEMICOLON
     
@@ -135,8 +170,7 @@ class Parser:
     def compound_statement(self):
         node = TreeNode("<compound-statement>")
         node.add_child(self.accept(type="KEYWORD", value="mulai"))
-        # TODO: Implement statement_list()
-        # node.add_child(self.statement_list())
+        node.add_child(self.statement_list())
         node.add_child(self.accept(type="KEYWORD", value="selesai"))
         return node
     
@@ -148,7 +182,28 @@ class Parser:
     
     #19 <while-statement> -> KEYWORD(selama) + expression + KEYWORD(lakukan) + statement
 
+    # TODO: Statement??
     #20 <for-statement> -> KEYWORD(untuk) + IDENTIFIER + ASSIGN_OPERATOR + expression + (KEYWORD(ke)/KEYWORD(turun-ke)) + expression + KEYWORD(lakukan ) + statement
+    def for_statement(self):
+        node = TreeNode("<for-statement>")
+
+        node.add_child(self.accept(type="KEYWORD", value="untuk"))
+        node.add_child(self.accept(type="IDENTIFIER"))
+        node.add_child(self.accept(type="ASSIGN_OPERATOR"))
+        node.add_child(self.expression())
+
+        match self.SYM:
+            case {"type": "KEYWORD", "value": "ke"}:
+                node.add_child(self.accept(type="KEYWORD", value="ke"))
+            case {"type": "KEYWORD", "value": "turun-ke"}:
+                node.add_child(self.accept(type="KEYWORD", value="turun-ke"))
+
+        node.add_child(self.expression())
+        node.add_child(self.accept(type="KEYWORD", value="lakukan"))
+
+        # TODO: Statement WTF IS THIS SHIT
+        
+        return node
 
     #21 <procedure/function-call> -> IDENTIFIER + (LPARENTHESIS + parameter-list + RPARENTHESIS)
     
@@ -159,6 +214,16 @@ class Parser:
     #24 <simple-expression> -> (ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? + term + (additive-operator + term)*
     
     #25 <term> -> factor + (multiplicative-operator + factor)*
+    def term(self):
+        node = TreeNode("<term>")
+
+        node.add_child(self.factor())
+        # Ini harusnya while(SYM == FIRST(<multiplicative-operator>)). terpaksa manual karena campur dengan "dan"
+        while (self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "*") or (self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "/") or (self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "bagi") or (self.SYM["type"] == "ARITHMETIC_OPERATOR" and self.SYM["value"] == "mod") or (self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "dan"):
+            node.add_child(self.multiplicative_operator())
+            node.add_child(self.factor())
+
+        return node
 
     #26 <factor> -> IDENTIFIER|NUMBER|CHAR_LITERAL|STRING_LITERAL|(LPARENTHESIS + expression + RPARENTHESIS)|LOGICAL_OPERATOR(tidak) + factor|function-call
 
