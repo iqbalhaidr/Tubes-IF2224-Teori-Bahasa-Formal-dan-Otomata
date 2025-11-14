@@ -185,6 +185,14 @@ class Parser:
 
         node.add_child(self.accept(type="RPARENTHESIS"))
         return node
+
+    #tambahan <parameter-group> -> identifier-list + COLON + type
+    def parameter_group(self):
+        node = TreeNode("<parameter-group>")
+        node.add_child(self.identifier_list())
+        node.add_child(self.accept(type="COLON"))
+        node.add_child(self.type())
+        return node
     
     #15 <compound-statement> -> KEYWORD(mulai) + statement-list + KEYWORD(selesai)
     def compound_statement(self):
