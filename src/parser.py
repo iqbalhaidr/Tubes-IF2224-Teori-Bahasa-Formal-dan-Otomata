@@ -50,11 +50,19 @@ class Parser:
         if (self.SYM["type"] != type):
             # TODO: Add more error details "error on line ... expected bla bla"
             print("Type error")
+            print("type:", self.SYM["type"])
+            print("value:", self.SYM["value"])
+            print("expected type:", type)
+            print(f"Expected value: {value}")
             sys.exit("Exiting program")
         
         if (value and self.SYM["value"] != value):
             # TODO: Add more error details "error on line ... expected bla bla"
             print("Value error")
+            print("type:", self.SYM["type"])
+            print("value:", self.SYM["value"])
+            print("expected type:", type)
+            print(f"Expected value: {value}")
             sys.exit("Exiting program")
 
         node = TreeNode(f"{self.SYM["type"]}({self.SYM["value"]})")
@@ -62,6 +70,18 @@ class Parser:
         # Baca SYM selanjutnya
         self.read()
         return node
+    
+    def peek(self):
+        if (self.next_SYM_idx < len(self.list_token)):
+            next_SYM = self.list_token[self.next_SYM_idx]
+            peeked_type = next_SYM.split('(')[0]
+            peeked_value = next_SYM.split('(')[1].rstrip(')')
+            return {
+                "type": peeked_type,
+                "value": peeked_value
+            }
+        else:
+            return None
     
     def parse(self):
         self.read()
@@ -110,6 +130,22 @@ class Parser:
         return node
     
     #4 <const-declaration> -> KEYWORD(konstanta) + (IDENTIFIER = value + SEMICOLON)+
+    def const_declaration(self):
+        node = TreeNode("<const-declaration>")
+
+        node.add_child(self.accept(type="KEYWORD", value="konstanta"))
+    
+        node.add_child(self.accept(type="IDENTIFIER"))
+        node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
+        node.add_child(self.accept(type="NUMBER"))
+        node.add_child(self.accept(type="SEMICOLON"))
+
+        while self.SYM["type"] == "IDENTIFIER":
+            node.add_child(self.accept(type="IDENTIFIER"))
+            node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
+            node.add_child(self.accept(type="NUMBER"))
+            node.add_child(self.accept(type="SEMICOLON"))
+        return node
 
     #5 <type-declaration> -> KEYWORD(tipe) + (IDENTIFIER = type-definition + SEMICOLON)+
 
@@ -124,12 +160,31 @@ class Parser:
     #10 <range> -> expression + RANGE_OPERATOR(..) + expression
 
     #11 <subprogram-declaration> -> procedure-declaration|function-declaration
+    def subprogram_declaration(self):
+        node = TreeNode("<subprogram-declaration>")
+        if self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "prosedur":
+            node.add_child(self.procedure_declaration())
+        elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "fungsi":
+            node.add_child(self.function_declaration())
+        return node
 
     #12 <procedure-declaration> -> KEYWORD(prosedur) + IDENTIFIER + (formal-parameter-list)? + SEMICOLON + block + SEMICOLON
 
     #13 <function-declaration> -> KEYWORD(fungsi) + IDENTIFIER + (formal-parameter-list)? + COLON + type + SEMICOLON + block + SEMICOLON
     
     #14 <formal-parameter-list> -> LPARENTHESIS + parameter-group (SEMICOLON + parameter-group)* + RPARENTHESIS
+    def formal_parameter_list(self):
+        node = TreeNode("<formal-parameter-list>")
+        node.add_child(self.accept(type="LPARENTHESIS"))
+
+        node.add_child(self.parameter_group())
+
+        while self.SYM["type"] == "SEMICOLON":
+            node.add_child(self.accept(type="SEMICOLON"))
+            node.add_child(self.parameter_group())
+
+        node.add_child(self.accept(type="RPARENTHESIS"))
+        return node
     
     #15 <compound-statement> -> KEYWORD(mulai) + statement-list + KEYWORD(selesai)
     def compound_statement(self):
@@ -141,8 +196,48 @@ class Parser:
         return node
     
     #16 <statement-list> -> statement + (SEMICOLON + statement)*
+    def statement_list(self):
+        node = TreeNode("<statement-list>")
+        self.peek()["type"], self.peek()["value"]
+
+        if self.SYM["type"] == "IDENTIFIER":
+            node.add_child(self.assignment_statement())
+        elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "jika":
+            node.add_child(self.if_statement()) 
+        elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "selama":
+            node.add_child(self.while_statement())
+        elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "untuk":
+            node.add_child(self.for_statement())
+        elif self.SYM["type"] == "IDENTIFIER":
+            node.add_child(self.procedure_function_call())
+        else:
+            # tidak boleh kosong
+            print("Empty statement list encountered") 
+            pass
+
+        while self.SYM["type"] == "SEMICOLON":
+            node.add_child(self.accept(type="SEMICOLON"))
+            self.peek()["type"], self.peek()["value"]
+            if self.SYM["type"] == "IDENTIFIER":
+                node.add_child(self.assignment_statement())
+            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "jika":
+                node.add_child(self.if_statement())
+            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "selama":
+                node.add_child(self.while_statement())
+            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "untuk":
+                node.add_child(self.for_statement())
+            elif self.SYM["type"] == "IDENTIFIER":
+                node.add_child(self.procedure_function_call())  
+            
+        return node
 
     #17 <assignment-statement> -> IDENTIFIER + ASSIGN_OPERATOR(:=) + expression
+    def assignment_statement(self):
+        node = TreeNode("<assignment-statement>")
+        node.add_child(self.accept(type="IDENTIFIER"))
+        node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
+        node.add_child(self.expression())
+        return node
 
     #18 <if-statement> -> KEYWORD(jika) + expression + KEYWORD(maka) + statement + (KEYWORD(selain-itu) + statement)?
     
@@ -157,6 +252,22 @@ class Parser:
     #23 <expression> -> simple-expression + (relational-operator + simple-expression)?
     
     #24 <simple-expression> -> (ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? + term + (additive-operator + term)*
+    def simple_expression(self):
+        node = TreeNode("<simple-expression>")
+        
+        if self.SYM["type"] == "ARITHMETIC_OPERATOR" and (self.SYM["value"] == "+" or self.SYM["value"] == "-"):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
+        
+        node.add_child(self.term())
+        
+        while self.SYM["type"] == "KEYWORD" and (self.SYM["value"] == "atau" ) or self.SYM["type"] == "ARITHMETIC_OPERATOR" and (self.SYM["value"] == "+" or self.SYM["value"] == "-"):
+            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "atau":
+                node.add_child(self.accept(type="KEYWORD", value="atau"))
+            else:
+                node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
+            node.add_child(self.term())
+        
+        return node
     
     #25 <term> -> factor + (multiplicative-operator + factor)*
 
