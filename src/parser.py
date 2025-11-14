@@ -377,7 +377,8 @@ class Parser:
         match self.SYM:
             case {"type": "IDENTIFIER"}:
                 # Kita gaskan jadi LL2 lah anjeng. ini intinya cek type next SYM tanpa increment next_SYM_idx
-                next_SYM_type = self.list_token[self.next_SYM_idx].split('(')[0] if (self.next_SYM_idx < len(self.list_token)) else None
+                next_SYM = self.peek()
+                next_SYM_type = next_SYM["type"] if next_SYM else None
                 if next_SYM_type == "ASSIGN_OPERATOR":
                     node.add_child(self.assignment_statement())
                 elif next_SYM_type == "LPARENTHESIS":
@@ -402,6 +403,7 @@ class Parser:
         
         return node
 
+    # TODO: AYO COK YANG NGERJAIN INI DAPAT PAHALA
     #32 <case-statement>
 
     #33 <repeat-statement>
