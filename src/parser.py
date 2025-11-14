@@ -186,6 +186,9 @@ class Parser:
                     node.add_child(self.accept(type="KEYWORD", value="boolean"))
                 case "char":
                     node.add_child(self.accept(type="KEYWORD", value="char"))
+                case _:
+                    pass
+
         else:
             node.add_child(self.array_type())
         return node
@@ -235,7 +238,10 @@ class Parser:
         node.add_child(self.accept(type="COLON", value=":"))
         node.add_child(self.type())
         node.add_child(self.accept(type="SEMICOLON", value=";"))
-        node.add_child(self.block())
+        # mewakili block
+        node.add_child(self.declaration_part())
+        node.add_child(self.compound_statement())
+
         node.add_child(self.accept(type="SEMICOLON", value=";"))
         return node
 
@@ -331,6 +337,14 @@ class Parser:
     #18 <if-statement> -> KEYWORD(jika) + expression + KEYWORD(maka) + statement + (KEYWORD(selain-itu) + statement)?
     
     #19 <while-statement> -> KEYWORD(selama) + expression + KEYWORD(lakukan) + statement
+    def while_statement(self):
+        node = TreeNode("<while-statement>")
+
+        node.add_child(self.accept(type="KEYWORD", value="selama"))
+        node.add_child(self.expression())
+        node.add_child(self.accept(type="KEYWORD", value="lakukan"))
+        node.add_child(self.statement())
+        return node
 
     #20 <for-statement> -> KEYWORD(untuk) + IDENTIFIER + ASSIGN_OPERATOR + expression + (KEYWORD(ke)/KEYWORD(turun-ke)) + expression + KEYWORD(lakukan ) + statement
     def for_statement(self):
@@ -372,7 +386,7 @@ class Parser:
         node = TreeNode("<expression>")
         node.add_child(self.simple_expression())
         if self.SYM["type"] == "RELATIONAL_OPERATOR":
-            node.add_child(self.accept(type="RELATIONAL_OPERATOR"))
+            node.add_child(self.relational_operator())
             node.add_child(self.simple_expression())
         return node
     
@@ -430,6 +444,8 @@ class Parser:
             case {"type": "LOGICAL_OPERATOR", "value": "tidak"}:
                 node.add_child(self.accept(type="LOGICAL_OPERATOR", value="tidak"))
                 node.add_child(self.factor())
+            case _:
+                pass
         return node
 
     #28 <relational-operator> -> =|<>|<|<=|>|>=
