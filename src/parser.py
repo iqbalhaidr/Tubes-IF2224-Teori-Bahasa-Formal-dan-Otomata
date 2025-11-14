@@ -118,7 +118,7 @@ class Parser:
         # (subprogram-declaration)*
         while self.SYM["type"] == "KEYWORD" and (self.SYM["value"] == "prosedur" or self.SYM["value"] == "fungsi"):
             node.add_child(self.subprogram_declaration())
-            
+        # print("Parsed declaration part")
         return node
     
     #4 <const-declaration> -> KEYWORD(konstanta) + (IDENTIFIER = value + SEMICOLON)+
@@ -319,52 +319,10 @@ class Parser:
     #16 <statement-list> -> statement + (SEMICOLON + statement)*
     def statement_list(self):
         node = TreeNode("<statement-list>")
-        peektype = self.peek()["type"]
-        peekvalue = self.peek()["value"]
-
-        if peektype == "IDENTIFIER":
-            node.add_child(self.assignment_statement())
-        elif peektype == "KEYWORD" and peekvalue == "jika":
-            node.add_child(self.if_statement()) 
-        elif peektype == "KEYWORD" and peekvalue == "selama":
-            node.add_child(self.while_statement())
-        elif peektype == "KEYWORD" and peekvalue == "untuk":
-            node.add_child(self.for_statement())
-        elif peektype == "IDENTIFIER":
-            node.add_child(self.procedure_function_call())
-        elif peektype == "KEYWORD" and peekvalue == "mulai":
-            node.add_child(self.compound_statement())
-        elif peektype == "KEYWORD" and peekvalue == "fungsi":
-            node.add_child(self.function_declaration())
-        elif peektype == "KEYWORD" and peekvalue == "prosedur":
-            node.add_child(self.procedure_declaration())
-        else:
-            # tidak boleh kosong
-            print("Empty statement list encountered") 
-            pass
-
+        node.add_child(self.statement())
         while self.SYM["type"] == "SEMICOLON":
             node.add_child(self.accept(type="SEMICOLON"))
-            peektype = self.peek()["type"]
-            peekvalue = self.peek()["value"]
-
-            if peektype == "IDENTIFIER":
-                node.add_child(self.assignment_statement())
-            elif peektype == "KEYWORD" and peekvalue == "jika":
-                node.add_child(self.if_statement()) 
-            elif peektype == "KEYWORD" and peekvalue == "selama":
-                node.add_child(self.while_statement())
-            elif peektype == "KEYWORD" and peekvalue == "untuk":
-                node.add_child(self.for_statement())
-            elif peektype == "IDENTIFIER":
-                node.add_child(self.procedure_function_call())
-            elif peektype == "KEYWORD" and peekvalue == "mulai":
-                node.add_child(self.compound_statement())
-            elif peektype == "KEYWORD" and peekvalue == "fungsi":
-                node.add_child(self.function_declaration())
-            elif peektype == "KEYWORD" and peekvalue == "prosedur":
-                node.add_child(self.procedure_declaration())  
-            
+            node.add_child(self.statement())
         return node
 
     #17 <assignment-statement> -> IDENTIFIER + ASSIGN_OPERATOR(:=) + expression
