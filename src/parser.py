@@ -496,9 +496,65 @@ class Parser:
         return node
 
     # TODO: AYO COK YANG NGERJAIN INI DAPAT PAHALA
-    #32 <case-statement>
+    #32 <case-statement> -> KEYWORD(kasus) + expression + KEYWORD(dari) 
+    #                       + (const + (COMMA(",") + const)* + COLON + statement) 
+    #                       + (SEMICOLON + const + (COMMA("," ) + const)* + COLON + statement)*
+    def case_statement(self):
+        node = TreeNode("<case_statement>")
 
-    #33 <repeat-statement>
+        node.add_child(self.accept(type="KEYWORD", value="kasus"))
+        node.add_child(self.expression())
+        node.add_child(self.accept(type="KEYWORD", value="dari"))
+
+        node.add_child(self.const())
+        
+        while (self.SYM["type"]== "COMMA"):
+            node.add_child(self.accept(type="COMMA"))
+            node.add_child(self.const())
+
+        node.add_child(self.accept(type="COLON"))
+        node.add_child(self.statement())
+
+        while (self.SYM["type"]== "SEMICOLON"):
+            node.add_child(self.accept(type="SEMICOLON"))
+            node.add_child(self.const())
+        
+            while (self.SYM["type"]== "COMMA"):
+                node.add_child(self.accept(type="COMMA"))
+                node.add_child(self.const())
+
+            node.add_child(self.accept(type="COLON"))
+            node.add_child(self.statement())
+        return node
+
+    #32 <const> -> ((ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? (NUMBER)) | (CHAR_LITERAL) | (IDENTIFIER)
+    def const(self):
+        node = TreeNode("<const>")
+    
+        if(self.SYM["type"]== "ARITHMETIC_OPERATOR" and (self.SYM["value"] in ["+", "-"])):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
+            if (self.SYM["type"]== "NUMBER") :
+                node.add_child(self.accept(type="NUMBER"))
+            else:
+                print("Syntax eror: Unary + or - must be followed by NUMBER")
+                sys.exit()
+        
+        elif (self.SYM["type"]== "NUMBER"):
+            node.add_child(self.accept(type="NUMBER"))
+
+        elif (self.SYM["type"]== "IDENTIFIER"):
+            node.add_child(self.accept(type="IDENTIFIER"))
+
+        elif(self.SYM["type"]== "CHAR_LITERAL"):
+            node.add_child(self.accept(type="CHAR_LITERAL"))
+        
+        else:
+            print(f"Syntax error: Invalid constant literal → {self.SYM}")
+            sys.exit()
+    
+        return node
+
+    #34 <repeat-statement>
     def repeat_statement(self):
         node = TreeNode("<repeat-statement>")
         node.add_child(self.accept(type="KEYWORD", value="ulangi"))
