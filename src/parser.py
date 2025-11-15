@@ -238,7 +238,7 @@ class Parser:
         
         return node
 
-    #8 <type> -> KEYWORD(integer)|KEYWORD(real)|KEYWORD(boolean)|KEYWORD(char)|array-type
+    #8 <type> -> KEYWORD(integer)|KEYWORD(real)|KEYWORD(boolean)|KEYWORD(char)|array-type|record-type
     def type(self):
         node = TreeNode("<type>")
         if self.SYM["type"] == "KEYWORD":
@@ -455,7 +455,6 @@ class Parser:
     def expression(self):
         node = TreeNode("<expression>")
         node.add_child(self.simple_expression())
-        # print(f"Parsed simple expression in expression, SYM is now: {self.SYM}")
         if self.SYM["type"] == "RELATIONAL_OPERATOR":
             node.add_child(self.relational_operator())
             node.add_child(self.simple_expression())
@@ -492,7 +491,7 @@ class Parser:
 
         return node
 
-    #26 <factor> -> IDENTIFIER|NUMBER|CHAR_LITERAL|STRING_LITERAL|(LPARENTHESIS + expression + RPARENTHESIS)|LOGICAL_OPERATOR(tidak) + factor|function-call
+    #26 <factor> -> VARIABLE|NUMBER|CHAR_LITERAL|STRING_LITERAL|(LPARENTHESIS + expression + RPARENTHESIS)|LOGICAL_OPERATOR(tidak) + factor|function-call
     def factor(self):
         node = TreeNode("<factor>")
 
