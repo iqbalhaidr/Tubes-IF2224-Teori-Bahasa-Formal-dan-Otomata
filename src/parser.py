@@ -134,7 +134,7 @@ class Parser:
         node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
 
         if self.SYM["type"] == "NUMBER":
-            node.add_child(self.accept(type="NUMBER"))
+            node.add_child(self.number_statement())
         elif self.SYM["type"] == "CHAR_LITERAL":
             node.add_child(self.accept(type="CHAR_LITERAL"))
         elif self.SYM["type"] == "STRING_LITERAL":
@@ -692,6 +692,8 @@ class Parser:
         if(self.SYM['DOT']):
             node.add_child(self.accept(type="DOT"))
             node.add_child(self.accept(type="NUMBER"))
+        
+        return node
 
     #35 <repeat-statement>
     def repeat_statement(self):
