@@ -29,7 +29,8 @@
     "ASSIGN_OPERATOR":  {"type": "ASSIGN_OPERATOR"},
 
     "LBRACKET":  {"type": "LBRACKET"},
-    "RBRACKET":  {"type": "RBRACKET"}
+    "RBRACKET":  {"type": "RBRACKET"},
+    "RANGE_OPERATOR" : {"type" : "RANGE_OPERATOR"}
 
   },
 
