@@ -5,9 +5,14 @@ konstanta
 
 tipe
   Bil = integer;
+  Mahasiswa = rekaman
+    nama : char;
+    umur : integer;
+  selesai;
 
 variabel
   x : Bil;
+  mhs : Mahasiswa;
 
 mulai
   x := k;
