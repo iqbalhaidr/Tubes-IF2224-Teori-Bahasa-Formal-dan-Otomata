@@ -150,7 +150,7 @@ class Parser:
             node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
             
             if self.SYM["type"] == "NUMBER":
-                node.add_child(self.accept(type="NUMBER"))
+                node.add_child(self.number_statement())
             elif self.SYM["type"] == "CHAR_LITERAL":
                 node.add_child(self.accept(type="CHAR_LITERAL"))
             elif self.SYM["type"] == "STRING_LITERAL":
@@ -469,9 +469,9 @@ class Parser:
         
         node.add_child(self.term())
         
-        while self.SYM["type"] == "KEYWORD" and (self.SYM["value"] == "atau" ) or self.SYM["type"] == "ARITHMETIC_OPERATOR" and (self.SYM["value"] == "+" or self.SYM["value"] == "-"):
-            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "atau":
-                node.add_child(self.accept(type="KEYWORD", value="atau"))
+        while self.SYM["type"] == "LOGICAL_OPERATOR" and (self.SYM["value"] == "atau" ) or self.SYM["type"] == "ARITHMETIC_OPERATOR" and (self.SYM["value"] == "+" or self.SYM["value"] == "-"):
+            if self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "atau":
+                node.add_child(self.accept(type="LOGICAL_OPERATOR", value="atau"))
             else:
                 node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
             node.add_child(self.term())
@@ -502,7 +502,7 @@ class Parser:
                 else:
                     node.add_child(self.variable())
             case {"type": "NUMBER"}:
-                node.add_child(self.accept(type="NUMBER"))
+                node.add_child(self.number_statement())
             case {"type": "CHAR_LITERAL"}:
                 node.add_child(self.accept(type="CHAR_LITERAL"))
             case {"type": "STRING_LITERAL"}:
@@ -524,13 +524,14 @@ class Parser:
         node.add_child(self.accept(type="IDENTIFIER"))
         # print("Parsing variable with SYM:", self.SYM)
 
-        if self.SYM["type"] == "DOT": # Buat record type
-            node.add_child(self.accept(type="DOT"))
-            node.add_child(self.accept(type="IDENTIFIER"))
-        elif self.SYM["type"] == "LBRACKET":
-            node.add_child(self.accept(type="LBRACKET"))
-            node.add_child(self.parameter_list())
-            node.add_child(self.accept(type="RBRACKET"))
+        while self.SYM["type"] == "LBRACKET" or self.SYM["type"] == "DOT":
+            if self.SYM["type"] == "DOT": # Buat record type
+                node.add_child(self.accept(type="DOT"))
+                node.add_child(self.accept(type="IDENTIFIER"))
+            elif self.SYM["type"] == "LBRACKET":
+                node.add_child(self.accept(type="LBRACKET"))
+                node.add_child(self.parameter_list())
+                node.add_child(self.accept(type="RBRACKET"))
 
         return node
 
@@ -689,7 +690,7 @@ class Parser:
         node = TreeNode("<number-statement>")
         node.add_child(self.accept(type="NUMBER"))
 
-        if(self.SYM['DOT']):
+        if(self.SYM["type"] == "DOT"):
             node.add_child(self.accept(type="DOT"))
             node.add_child(self.accept(type="NUMBER"))
         
