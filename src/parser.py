@@ -47,8 +47,8 @@ class Parser:
             self.next_SYM_idx = self.next_SYM_idx + 1
 
     def accept(self, type, value=None):
-        print(self.SYM["type"])
-        print(self.SYM["value"])
+        # print(self.SYM["type"])
+        # print(self.SYM["value"])
         if (self.SYM["type"] != type or (value is not None and self.SYM["value"] != value)):
             expected_str = f"{type}({value})" if value is not None else type
             got_str = f"{self.SYM['type']}({self.SYM['value']})"
@@ -440,7 +440,7 @@ class Parser:
     
     #22 <parameter-list> -> expression + (COMMA + expression)*
     def parameter_list(self):
-        print("Parsing parameter list...")
+        # print("Parsing parameter list...")
         node = TreeNode("<parameter-list>")
 
         node.add_child(self.expression())
@@ -455,11 +455,11 @@ class Parser:
     def expression(self):
         node = TreeNode("<expression>")
         node.add_child(self.simple_expression())
-        print(f"Parsed simple expression in expression, SYM is now: {self.SYM}")
+        # print(f"Parsed simple expression in expression, SYM is now: {self.SYM}")
         if self.SYM["type"] == "RELATIONAL_OPERATOR":
             node.add_child(self.relational_operator())
             node.add_child(self.simple_expression())
-        print(f"Parsed expression, SYM is now: {self.SYM}")
+        # print(f"Parsed expression, SYM is now: {self.SYM}")
         return node
     
     #24 <simple-expression> -> (ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? + term + (additive-operator + term)*
@@ -589,7 +589,7 @@ class Parser:
     #31 <statement>
     def statement(self):
         node = TreeNode("<statement>")
-        print("Parsing statement with SYM:", self.SYM)
+        # print("Parsing statement with SYM:", self.SYM)
 
         match self.SYM:
             case {"type": "IDENTIFIER"}:
