@@ -356,7 +356,8 @@ class Parser:
     #17 <assignment-statement> -> IDENTIFIER + ASSIGN_OPERATOR(:=) + expression
     def assignment_statement(self):
         node = TreeNode("<assignment-statement>")
-        node.add_child(self.accept(type="IDENTIFIER"))
+        # node.add_child(self.accept(type="IDENTIFIER"))
+        node.add_child(self.variable())
         node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
         node.add_child(self.expression())
         return node
@@ -580,12 +581,12 @@ class Parser:
                 # Kita gaskan jadi LL2 lah anjeng. ini intinya cek type next SYM tanpa increment next_SYM_idx
                 next_SYM = self.peek()
                 next_SYM_type = next_SYM["type"] if next_SYM else None
-                if next_SYM_type == "ASSIGN_OPERATOR":
-                    node.add_child(self.assignment_statement())
-                elif next_SYM_type == "LPARENTHESIS":
+                if next_SYM_type == "LPARENTHESIS":
                     node.add_child(self.procedure_function_call())
                 else:
-                    sys.exit("Error: Expected ':=' or '(' after identifier! (<statement>) Exiting program")
+                    node.add_child(self.assignment_statement())
+                # else:
+                #     sys.exit("Error: Expected ':=' or '(' after identifier! (<statement>) Exiting program")
             case {"type": "KEYWORD", "value": "mulai"}:
                 node.add_child(self.compound_statement())
             case {"type": "KEYWORD", "value": "jika"}:
