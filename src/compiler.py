@@ -1,6 +1,7 @@
 import json
 import sys
 from parser import Parser
+import os
 
 def match_pattern(pattern, char):
     if pattern == "reg[A-Za-z0-9_]":
@@ -34,8 +35,18 @@ def check_keyword(stringValue, list_tok, dfa):
 dfa = None
 list_tokens = []
 
-with open("DFA-id.json", "r") as f:
-    dfa = json.load(f)
+try:
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    json_path = os.path.join(script_dir, "DFA-id.json")
+    with open(json_path, "r") as f:
+        dfa = json.load(f)
+except FileNotFoundError:
+    print(f"Error: Could not find required file 'DFA-id.json'.")
+    print(f"Make sure it is in the same directory as the script.")
+    exit()
+except Exception as e:
+    print(f"Error loading 'DFA-id.json': {e}")
+    exit()
 
 try :
     filePath = sys.argv[1]
@@ -46,6 +57,7 @@ try :
 
     with open(f"{filePath}", "r") as f:
         pass
+
 except FileNotFoundError:
     print("File tidak ditemukan.")
     exit()
