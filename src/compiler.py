@@ -34,18 +34,26 @@ def check_keyword(stringValue, list_tok, dfa):
 dfa = None
 list_tokens = []
 
-with open("src/DFA-id.json", "r") as f:
+with open("DFA-id.json", "r") as f:
     dfa = json.load(f)
 
 try :
-    file = sys.argv[1]
-    with open(f"test/milestone-2/{file}.pas", "r") as f:
+    filePath = sys.argv[1]
+
+    if not filePath.endswith(".pas"):
+        print("Error: Hanya file dengan ekstensi .pas yang diizinkan.")
+        exit()
+
+    with open(f"{filePath}", "r") as f:
         pass
 except FileNotFoundError:
-    print("File tidak ditemukan. Pastikan file berada di folder 'test' dan berekstensi .pas")
+    print("File tidak ditemukan.")
+    exit()
+except IndexError:
+    print("Error: Mohon berikan nama file sebagai argumen.")
     exit()
 
-with open(f"test/milestone-2/{file}.pas", "r") as f:
+with open(f"{filePath}", "r") as f:
     current_state = "q0"
     value = ""
     while True:
