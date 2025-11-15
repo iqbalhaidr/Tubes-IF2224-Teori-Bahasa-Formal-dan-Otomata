@@ -47,8 +47,9 @@ class Parser:
             self.next_SYM_idx = self.next_SYM_idx + 1
 
     def accept(self, type, value=None):
-        # print(self.SYM["type"])
-        # print(self.SYM["value"])
+        print(self.SYM["type"] + " ini nilai type")
+        print(self.SYM["value"] + " ini nilai value")
+        print()
         if (self.SYM["type"] != type or (value is not None and self.SYM["value"] != value)):
             expected_str = f"{type}({value})" if value is not None else type
             got_str = f"{self.SYM['type']}({self.SYM['value']})"
@@ -259,8 +260,6 @@ class Parser:
                     pass
         elif self.SYM["type"] == "IDENTIFIER":
             node.add_child(self.accept(type="IDENTIFIER"))
-        else:
-            node.add_child(self.array_type())
         return node
 
     #9 <array-type> -> KEYWORD(larik) + LBRACKET + range + RBRACKET + KEYWORD(dari) + type
@@ -658,7 +657,7 @@ class Parser:
         node.add_child(self.accept(type="KEYWORD", value="akhir"))
         return node
 
-    #32 <const> -> ((ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? (NUMBER)) | (CHAR_LITERAL) | (IDENTIFIER)
+    #33 <const> -> ((ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? (NUMBER)) | (CHAR_LITERAL) | (IDENTIFIER)
     def const(self):
         node = TreeNode("<const>")
     
@@ -685,7 +684,16 @@ class Parser:
     
         return node
 
-    #34 <repeat-statement>
+    #34 <number-statement> -> NUMBER | NUMBER DOT NUMBER
+    def number_statement(self):
+        node = TreeNode("<number-statement>")
+        node.add_child(self.accept(type="NUMBER"))
+
+        if(self.SYM['DOT']):
+            node.add_child(self.accept(type="DOT"))
+            node.add_child(self.accept(type="NUMBER"))
+
+    #35 <repeat-statement>
     def repeat_statement(self):
         node = TreeNode("<repeat-statement>")
         node.add_child(self.accept(type="KEYWORD", value="ulangi"))
