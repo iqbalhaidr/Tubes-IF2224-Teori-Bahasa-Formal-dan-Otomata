@@ -245,7 +245,8 @@ class Parser:
                     node.add_child(self.accept(type="KEYWORD", value="char"))
                 case _:
                     pass
-
+        elif self.SYM["type"] == "IDENTIFIER":
+            node.add_child(self.accept(type="IDENTIFIER"))
         else:
             node.add_child(self.array_type())
         return node
