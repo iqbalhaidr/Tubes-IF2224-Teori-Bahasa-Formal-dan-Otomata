@@ -427,6 +427,7 @@ class Parser:
     
     #22 <parameter-list> -> expression + (COMMA + expression)*
     def parameter_list(self):
+        print("Parsing parameter list...")
         node = TreeNode("<parameter-list>")
 
         node.add_child(self.expression())
@@ -488,7 +489,7 @@ class Parser:
                 if self.peek() and self.peek()["type"] == "LPARENTHESIS":
                     node.add_child(self.procedure_function_call())
                 else:
-                    node.add_child(self.accept(type="IDENTIFIER"))
+                    node.add_child(self.variable())
             case {"type": "NUMBER"}:
                 node.add_child(self.accept(type="NUMBER"))
             case {"type": "CHAR_LITERAL"}:
@@ -504,6 +505,22 @@ class Parser:
                 node.add_child(self.factor())
             case _:
                 pass
+        return node
+    
+    #<variable> -> IDENTIFIER | IDENTIFIER + LBRACKET + parameter-list + RBRACKET |IDENTIFIER + DOT + IDENTIFIER
+    def variable(self):
+        node = TreeNode("<variable>")
+        node.add_child(self.accept(type="IDENTIFIER"))
+        # print("Parsing variable with SYM:", self.SYM)
+
+        if self.SYM["type"] == "DOT": # Buat record type
+            node.add_child(self.accept(type="DOT"))
+            node.add_child(self.accept(type="IDENTIFIER"))
+        elif self.SYM["type"] == "LBRACKET":
+            node.add_child(self.accept(type="LBRACKET"))
+            node.add_child(self.parameter_list())
+            node.add_child(self.accept(type="RBRACKET"))
+
         return node
 
     #28 <relational-operator> -> =|<>|<|<=|>|>=
