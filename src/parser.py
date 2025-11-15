@@ -42,21 +42,17 @@ class Parser:
     def read(self):
         if (self.next_SYM_idx < len(self.list_token)):
             next_SYM = self.list_token[self.next_SYM_idx]
-            self.SYM["type"] = next_SYM.split('(')[0]
-            self.SYM["value"] = next_SYM.split('(')[1].rstrip(')')
+            self.SYM["type"] = next_SYM.split('(', 1)[0]
+            self.SYM["value"] = next_SYM.split('(', 1)[1][:-1]
             self.next_SYM_idx = self.next_SYM_idx + 1
 
     def accept(self, type, value=None):
         print(self.SYM["type"])
         print(self.SYM["value"])
-        if (self.SYM["type"] != type):
-            # TODO: Add more error details "error on line ... expected bla bla"
-            print("Type error")
-            sys.exit("Exiting program")
-        
-        if (value and self.SYM["value"] != value):
-            # TODO: Add more error details "error on line ... expected bla bla"
-            print("Value error")
+        if (self.SYM["type"] != type or (value is not None and self.SYM["value"] != value)):
+            expected_str = f"{type}({value})" if value is not None else type
+            got_str = f"{self.SYM['type']}({self.SYM['value']})"
+            print(f"Error, expected {expected_str} but got {got_str}")
             sys.exit("Exiting program")
 
         node = TreeNode(f'{self.SYM["type"]}({self.SYM["value"]})')
@@ -135,13 +131,33 @@ class Parser:
     
         node.add_child(self.accept(type="IDENTIFIER"))
         node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
-        node.add_child(self.accept(type="NUMBER"))
+
+        if self.SYM["type"] == "NUMBER":
+            node.add_child(self.accept(type="NUMBER"))
+        elif self.SYM["type"] == "CHAR_LITERAL":
+            node.add_child(self.accept(type="CHAR_LITERAL"))
+        elif self.SYM["type"] == "STRING_LITERAL":
+            node.add_child(self.accept(type="STRING_LITERAL"))
+        else:
+            print(f"Syntax error: expected constant value, got {self.SYM['value']}")
+            sys.exit()
+
         node.add_child(self.accept(type="SEMICOLON"))
 
         while self.SYM["type"] == "IDENTIFIER":
             node.add_child(self.accept(type="IDENTIFIER"))
             node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
-            node.add_child(self.accept(type="NUMBER"))
+            
+            if self.SYM["type"] == "NUMBER":
+                node.add_child(self.accept(type="NUMBER"))
+            elif self.SYM["type"] == "CHAR_LITERAL":
+                node.add_child(self.accept(type="CHAR_LITERAL"))
+            elif self.SYM["type"] == "STRING_LITERAL":
+                node.add_child(self.accept(type="STRING_LITERAL"))
+            else:
+                print(f"Syntax error: expected constant value, got {self.SYM['value']}")
+                sys.exit()
+
             node.add_child(self.accept(type="SEMICOLON"))
         return node
 
