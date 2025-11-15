@@ -172,6 +172,7 @@ class Parser:
 
         return node
 
+    # <record_type> -> KEYWORD(rekaman) + (identifier-list + COLON(:) + (KEYWORD(integer) | KEYWORD(real) | KEYWORD(boolean) | KEYWORD(char)) + SEMICOLON(;))+
     def record_type(self):
         node = TreeNode("<record-type>")
 
