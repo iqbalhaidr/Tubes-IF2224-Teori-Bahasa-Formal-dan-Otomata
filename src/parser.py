@@ -131,13 +131,33 @@ class Parser:
     
         node.add_child(self.accept(type="IDENTIFIER"))
         node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
-        node.add_child(self.accept(type="NUMBER"))
+
+        if self.SYM["type"] == "NUMBER":
+            node.add_child(self.accept(type="NUMBER"))
+        elif self.SYM["type"] == "CHAR_LITERAL":
+            node.add_child(self.accept(type="CHAR_LITERAL"))
+        elif self.SYM["type"] == "STRING_LITERAL":
+            node.add_child(self.accept(type="STRING_LITERAL"))
+        else:
+            print(f"Syntax error: expected constant value, got {self.SYM['value']}")
+            sys.exit()
+
         node.add_child(self.accept(type="SEMICOLON"))
 
         while self.SYM["type"] == "IDENTIFIER":
             node.add_child(self.accept(type="IDENTIFIER"))
             node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
-            node.add_child(self.accept(type="NUMBER"))
+            
+            if self.SYM["type"] == "NUMBER":
+                node.add_child(self.accept(type="NUMBER"))
+            elif self.SYM["type"] == "CHAR_LITERAL":
+                node.add_child(self.accept(type="CHAR_LITERAL"))
+            elif self.SYM["type"] == "STRING_LITERAL":
+                node.add_child(self.accept(type="STRING_LITERAL"))
+            else:
+                print(f"Syntax error: expected constant value, got {self.SYM['value']}")
+                sys.exit()
+
             node.add_child(self.accept(type="SEMICOLON"))
         return node
 
