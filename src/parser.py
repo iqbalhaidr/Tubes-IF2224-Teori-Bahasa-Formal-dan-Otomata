@@ -157,7 +157,7 @@ class Parser:
 
             if self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ("integer", "real", "boolean", "char", "string"):
                 node.add_child(self.accept("KEYWORD"))
-            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "array":
+            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "larik":
                 node.add_child(self.array_type())
             elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "rekaman":
                 node.add_child(self.record_type())
@@ -255,9 +255,9 @@ class Parser:
         node = TreeNode("<array-type>")
 
         node.add_child(self.accept(type="KEYWORD", value="larik"))
-        node.add_child(self.accept(type="LBRACKET", value="("))
+        node.add_child(self.accept(type="LBRACKET", value="["))
         node.add_child(self.range())
-        node.add_child(self.accept(type="RBRACKET", value=")"))
+        node.add_child(self.accept(type="RBRACKET", value="]"))
         node.add_child(self.accept(type="KEYWORD", value="dari"))
         node.add_child(self.type())
 
