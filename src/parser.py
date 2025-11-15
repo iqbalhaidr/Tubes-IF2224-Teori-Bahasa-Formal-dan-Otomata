@@ -47,6 +47,8 @@ class Parser:
             self.next_SYM_idx = self.next_SYM_idx + 1
 
     def accept(self, type, value=None):
+        print(self.SYM["type"])
+        print(self.SYM["value"])
         if (self.SYM["type"] != type):
             # TODO: Add more error details "error on line ... expected bla bla"
             print("Type error")
@@ -86,8 +88,11 @@ class Parser:
     def program(self):
         node = TreeNode("<program>")
         node.add_child(self.program_header())
+        # print("Parsed program header")
         node.add_child(self.declaration_part())
+        # print("Parsed declaration part")
         node.add_child(self.compound_statement())
+        # print("Parsed compound statement")
         node.add_child(self.accept(type="DOT", value="."))
         return node
     
@@ -106,19 +111,20 @@ class Parser:
         # (const-declaration)*
         while self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "konstanta":
             node.add_child(self.const_declaration())
-        
+        # print("Parsed const declaration")
         # (type-declaration)*
         while self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "tipe":
             node.add_child(self.type_declaration())
+        # print("Parsed type declaration")
             
         # (var-declaration)*
         while self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "variabel":
+            # print("Parsing var declaration")
             node.add_child(self.var_declaration())
         
         # (subprogram-declaration)*
         while self.SYM["type"] == "KEYWORD" and (self.SYM["value"] == "prosedur" or self.SYM["value"] == "fungsi"):
             node.add_child(self.subprogram_declaration())
-            
         return node
     
     #4 <const-declaration> -> KEYWORD(konstanta) + (IDENTIFIER = value + SEMICOLON)+
@@ -149,12 +155,12 @@ class Parser:
             node.add_child(self.accept(type="IDENTIFIER"))
             node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="="))
 
-            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ("integer", "real", "boolean", "char"):
+            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ("integer", "real", "boolean", "char", "string"):
                 node.add_child(self.accept("KEYWORD"))
-            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "array":
+            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "larik":
                 node.add_child(self.array_type())
-            elif self.SYM["type"] == "IDENTIFIER":
-                node.add_child(self.accept("IDENTIFIER"))
+            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "rekaman":
+                node.add_child(self.record_type())
             else:
                 print(f"Syntax error: expected type-definition, got {self.SYM['value']}")
                 sys.exit()
@@ -164,6 +170,22 @@ class Parser:
             if self.SYM["type"] != "IDENTIFIER":
                 break
 
+        return node
+
+    def record_type(self):
+        node = TreeNode("<record-type>")
+
+        node.add_child(self.accept("KEYWORD", "rekaman"))
+
+        while self.SYM["type"] == "IDENTIFIER":
+            node.add_child(self.identifier_list())
+
+            node.add_child(self.accept("COLON"))
+            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ("integer", "real", "boolean", "char"):
+                node.add_child(self.accept("KEYWORD"))
+            node.add_child(self.accept("SEMICOLON"))
+
+        node.add_child(self.accept("KEYWORD", "selesai"))
         return node
 
 
@@ -176,12 +198,17 @@ class Parser:
         node = TreeNode("<var-declaration>")
 
         node.add_child(self.accept(type="KEYWORD", value="variabel"))
+        # print("masuk parsing var declaration")
         
         # pastikan minimal 1 kali kemunculan (identifier-list + COLON + type + SEMICOLON)
         node.add_child(self.identifier_list())
         node.add_child(self.accept(type="COLON", value=":"))
+        # print("2")
         node.add_child(self.type())
+        # print("3")
         node.add_child(self.accept(type="SEMICOLON", value=";"))
+
+        # print("selesai 1 parsing var declaration")
 
         while self.SYM["type"] == "IDENTIFIER":
             node.add_child(self.identifier_list())
@@ -228,9 +255,9 @@ class Parser:
         node = TreeNode("<array-type>")
 
         node.add_child(self.accept(type="KEYWORD", value="larik"))
-        node.add_child(self.accept(type="LBRACKET", value="("))
+        node.add_child(self.accept(type="LBRACKET", value="["))
         node.add_child(self.range())
-        node.add_child(self.accept(type="RBRACKET", value=")"))
+        node.add_child(self.accept(type="RBRACKET", value="]"))
         node.add_child(self.accept(type="KEYWORD", value="dari"))
         node.add_child(self.type())
 
@@ -311,7 +338,9 @@ class Parser:
     #15 <compound-statement> -> KEYWORD(mulai) + statement-list + KEYWORD(selesai)
     def compound_statement(self):
         node = TreeNode("<compound-statement>")
+        # print("Parsing compound statement...")
         node.add_child(self.accept(type="KEYWORD", value="mulai"))
+        # print("Parsing statement list...")
         node.add_child(self.statement_list())
         node.add_child(self.accept(type="KEYWORD", value="selesai"))
         return node
@@ -319,52 +348,11 @@ class Parser:
     #16 <statement-list> -> statement + (SEMICOLON + statement)*
     def statement_list(self):
         node = TreeNode("<statement-list>")
-        peektype = self.peek()["type"]
-        peekvalue = self.peek()["value"]
-
-        if peektype == "IDENTIFIER":
-            node.add_child(self.assignment_statement())
-        elif peektype == "KEYWORD" and peekvalue == "jika":
-            node.add_child(self.if_statement()) 
-        elif peektype == "KEYWORD" and peekvalue == "selama":
-            node.add_child(self.while_statement())
-        elif peektype == "KEYWORD" and peekvalue == "untuk":
-            node.add_child(self.for_statement())
-        elif peektype == "IDENTIFIER":
-            node.add_child(self.procedure_function_call())
-        elif peektype == "KEYWORD" and peekvalue == "mulai":
-            node.add_child(self.compound_statement())
-        elif peektype == "KEYWORD" and peekvalue == "fungsi":
-            node.add_child(self.function_declaration())
-        elif peektype == "KEYWORD" and peekvalue == "prosedur":
-            node.add_child(self.procedure_declaration())
-        else:
-            # tidak boleh kosong
-            print("Empty statement list encountered") 
-            pass
-
+        # print("Parsing first statement...")
+        node.add_child(self.statement())
         while self.SYM["type"] == "SEMICOLON":
             node.add_child(self.accept(type="SEMICOLON"))
-            peektype = self.peek()["type"]
-            peekvalue = self.peek()["value"]
-
-            if peektype == "IDENTIFIER":
-                node.add_child(self.assignment_statement())
-            elif peektype == "KEYWORD" and peekvalue == "jika":
-                node.add_child(self.if_statement()) 
-            elif peektype == "KEYWORD" and peekvalue == "selama":
-                node.add_child(self.while_statement())
-            elif peektype == "KEYWORD" and peekvalue == "untuk":
-                node.add_child(self.for_statement())
-            elif peektype == "IDENTIFIER":
-                node.add_child(self.procedure_function_call())
-            elif peektype == "KEYWORD" and peekvalue == "mulai":
-                node.add_child(self.compound_statement())
-            elif peektype == "KEYWORD" and peekvalue == "fungsi":
-                node.add_child(self.function_declaration())
-            elif peektype == "KEYWORD" and peekvalue == "prosedur":
-                node.add_child(self.procedure_declaration())  
-            
+            node.add_child(self.statement())
         return node
 
     #17 <assignment-statement> -> IDENTIFIER + ASSIGN_OPERATOR(:=) + expression
@@ -379,13 +367,16 @@ class Parser:
     def if_statement(self):
         node = TreeNode("<if-statement>")
         node.add_child(self.accept(type="KEYWORD", value="jika"))
+        # print("Parsing expression in if statement...")
         node.add_child(self.expression())
+        # print("Parsed 'expression' in if statement...")
         node.add_child(self.accept(type="KEYWORD", value="maka"))
+        # print("Parsing maka in if 2statement...")
         node.add_child(self.statement())
 
 
-        if(self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "selain-itu"):
-            node.add_child(self.accept(type="KEYWORD", value="selain-itu"))
+        if(self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "selainitu"):
+            node.add_child(self.accept(type="KEYWORD", value="selainitu"))
             node.add_child(self.statement())
 
         return node
@@ -412,8 +403,8 @@ class Parser:
         match self.SYM:
             case {"type": "KEYWORD", "value": "ke"}:
                 node.add_child(self.accept(type="KEYWORD", value="ke"))
-            case {"type": "KEYWORD", "value": "turun-ke"}:
-                node.add_child(self.accept(type="KEYWORD", value="turun-ke"))
+            case {"type": "KEYWORD", "value": "turunke"}:
+                node.add_child(self.accept(type="KEYWORD", value="turunke"))
             case _:
                 sys.exit("Error: Expected 'ke' or 'turun-ke'! (<statement>) Exiting program")
 
@@ -449,9 +440,11 @@ class Parser:
     def expression(self):
         node = TreeNode("<expression>")
         node.add_child(self.simple_expression())
+        print(f"Parsed simple expression in expression, SYM is now: {self.SYM}")
         if self.SYM["type"] == "RELATIONAL_OPERATOR":
             node.add_child(self.relational_operator())
             node.add_child(self.simple_expression())
+        print(f"Parsed expression, SYM is now: {self.SYM}")
         return node
     
     #24 <simple-expression> -> (ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? + term + (additive-operator + term)*
@@ -565,6 +558,7 @@ class Parser:
     #31 <statement>
     def statement(self):
         node = TreeNode("<statement>")
+        print("Parsing statement with SYM:", self.SYM)
 
         match self.SYM:
             case {"type": "IDENTIFIER"}:
@@ -583,7 +577,8 @@ class Parser:
                 node.add_child(self.if_statement())
             case {"type": "KEYWORD", "value": "kasus"}:
                 # TODO: Implementasi case_statement()
-                sys.exit("<case-statement> belum diimplmentasikan woy! Exiting program")
+                node.add_child(self.case_statement())
+                # sys.exit("<case-statement> belum diimplmentasikan woy! Exiting program")
             case {"type": "KEYWORD", "value": "selama"}:
                 node.add_child(self.while_statement())
             case {"type": "KEYWORD", "value": "ulangi"}:
@@ -596,9 +591,71 @@ class Parser:
         return node
 
     # TODO: AYO COK YANG NGERJAIN INI DAPAT PAHALA
-    #32 <case-statement>
+    #32 <case-statement> -> KEYWORD(kasus) + expression + KEYWORD(dari) 
+    #                       + (const + (COMMA(",") + const)* + COLON + statement) 
+    #                       + (SEMICOLON + const + (COMMA("," ) + const)* + COLON + statement)*
+    #                       + KEYWORD(akhir)
+    def case_statement(self):
+        node = TreeNode("<case_statement>")
 
-    #33 <repeat-statement>
+        node.add_child(self.accept(type="KEYWORD", value="kasus"))
+        node.add_child(self.expression())
+        node.add_child(self.accept(type="KEYWORD", value="dari"))
+
+        node.add_child(self.const())
+        
+        while (self.SYM["type"]== "COMMA"):
+            node.add_child(self.accept(type="COMMA"))
+            node.add_child(self.const())
+
+        node.add_child(self.accept(type="COLON"))
+        node.add_child(self.statement())
+
+        while (self.SYM["type"]== "SEMICOLON"):
+            node.add_child(self.accept(type="SEMICOLON"))
+
+            if(self.SYM["value"]=="akhir"):
+                break
+            node.add_child(self.const())
+        
+            while (self.SYM["type"]== "COMMA"):
+                node.add_child(self.accept(type="COMMA"))
+                node.add_child(self.const())
+
+            node.add_child(self.accept(type="COLON"))
+            node.add_child(self.statement())
+
+        node.add_child(self.accept(type="KEYWORD", value="akhir"))
+        return node
+
+    #32 <const> -> ((ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? (NUMBER)) | (CHAR_LITERAL) | (IDENTIFIER)
+    def const(self):
+        node = TreeNode("<const>")
+    
+        if(self.SYM["type"]== "ARITHMETIC_OPERATOR" and (self.SYM["value"] in ["+", "-"])):
+            node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
+            if (self.SYM["type"]== "NUMBER") :
+                node.add_child(self.accept(type="NUMBER"))
+            else:
+                print("Syntax eror: Unary + or - must be followed by NUMBER")
+                sys.exit()
+        
+        elif (self.SYM["type"]== "NUMBER"):
+            node.add_child(self.accept(type="NUMBER"))
+
+        elif (self.SYM["type"]== "IDENTIFIER"):
+            node.add_child(self.accept(type="IDENTIFIER"))
+
+        elif(self.SYM["type"]== "CHAR_LITERAL"):
+            node.add_child(self.accept(type="CHAR_LITERAL"))
+        
+        else:
+            print(f"Syntax error: Invalid constant literal → {self.SYM}")
+            sys.exit()
+    
+        return node
+
+    #34 <repeat-statement>
     def repeat_statement(self):
         node = TreeNode("<repeat-statement>")
         node.add_child(self.accept(type="KEYWORD", value="ulangi"))

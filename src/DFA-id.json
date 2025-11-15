@@ -29,7 +29,8 @@
     "ASSIGN_OPERATOR":  {"type": "ASSIGN_OPERATOR"},
 
     "LBRACKET":  {"type": "LBRACKET"},
-    "RBRACKET":  {"type": "RBRACKET"}
+    "RBRACKET":  {"type": "RBRACKET"},
+    "RANGE_OPERATOR" : {"type" : "RANGE_OPERATOR"}
 
   },
 
@@ -41,14 +42,15 @@
     { "lexeme": "variabel",       "token": "KEYWORD" },
     { "lexeme": "mulai",     "token": "KEYWORD" },
     { "lexeme": "selesai",       "token": "KEYWORD" },
+    { "lexeme": "akhir",       "token": "KEYWORD" },
     { "lexeme": "jika",        "token": "KEYWORD" },
     { "lexeme": "maka",      "token": "KEYWORD" },
-    { "lexeme": "selain-itu",      "token": "KEYWORD" },
+    { "lexeme": "selainitu",      "token": "KEYWORD" },
     { "lexeme": "selama",     "token": "KEYWORD" },
     { "lexeme": "lakukan",        "token": "KEYWORD" },
     { "lexeme": "untuk",       "token": "KEYWORD" },
     { "lexeme": "ke",        "token": "KEYWORD" },
-    { "lexeme": "turun-ke",    "token": "KEYWORD" },
+    { "lexeme": "turunke",    "token": "KEYWORD" },
     { "lexeme": "integer",   "token": "KEYWORD" },
     { "lexeme": "real",      "token": "KEYWORD" },
     { "lexeme": "boolean",   "token": "KEYWORD" },
