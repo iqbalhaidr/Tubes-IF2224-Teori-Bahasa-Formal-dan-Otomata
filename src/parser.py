@@ -253,6 +253,8 @@ class Parser:
                     node.add_child(self.accept(type="KEYWORD", value="char"))
                 case "rekaman":
                     node.add_child(self.record_type())
+                case "larik":
+                    node.add_child(self.array_type())
                 case _:
                     pass
         elif self.SYM["type"] == "IDENTIFIER":
