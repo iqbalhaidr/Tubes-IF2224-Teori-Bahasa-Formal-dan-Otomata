@@ -161,7 +161,7 @@ class Parser:
             node.add_child(self.accept(type="SEMICOLON"))
         return node
 
-    #5 <type-declaration> -> KEYWORD(tipe) + (IDENTIFIER = type-definition + SEMICOLON)+
+    #5 <type-declaration> -> KEYWORD(tipe) + (IDENTIFIER = type + SEMICOLON)+
     def type_declaration(self):
         node = TreeNode("<type-declaration>")
 
@@ -171,15 +171,7 @@ class Parser:
             node.add_child(self.accept(type="IDENTIFIER"))
             node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="="))
 
-            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ("integer", "real", "boolean", "char", "string"):
-                node.add_child(self.accept("KEYWORD"))
-            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "larik":
-                node.add_child(self.array_type())
-            elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "rekaman":
-                node.add_child(self.record_type())
-            else:
-                print(f"Syntax error: expected type-definition, got {self.SYM['value']}")
-                sys.exit()
+            node.add_child(self.type())
 
             node.add_child(self.accept(type="SEMICOLON", value=";"))
 
@@ -198,8 +190,7 @@ class Parser:
             node.add_child(self.identifier_list())
 
             node.add_child(self.accept("COLON"))
-            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ("integer", "real", "boolean", "char"):
-                node.add_child(self.accept("KEYWORD"))
+            node.add_child(self.type())
             node.add_child(self.accept("SEMICOLON"))
 
         node.add_child(self.accept("KEYWORD", "selesai"))
@@ -260,6 +251,8 @@ class Parser:
                     node.add_child(self.accept(type="KEYWORD", value="boolean"))
                 case "char":
                     node.add_child(self.accept(type="KEYWORD", value="char"))
+                case "rekaman":
+                    node.add_child(self.record_type())
                 case _:
                     pass
         elif self.SYM["type"] == "IDENTIFIER":
