@@ -7,6 +7,6 @@ variabel
   a : Angka5;
 
 mulai
-  a(1) := 7;
-  a(2) := 8;
+  a[1] := 7;
+  a[2] := 8;
 selesai.
