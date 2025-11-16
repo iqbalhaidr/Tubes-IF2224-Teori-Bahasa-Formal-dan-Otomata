@@ -250,7 +250,7 @@ class Parser:
             sys.exit()
         return node
 
-    #9 <array-type> -> KEYWORD(larik) + LBRACKET + range + RBRACKET + KEYWORD(dari) + type
+    #9 <array-type> -> KEYWORD(larik) + LBRACKET + range + (COMMA(,) + <range>)* + RBRACKET + KEYWORD(dari) + type
     def array_type(self):
         node = TreeNode("<array-type>")
 
@@ -258,10 +258,10 @@ class Parser:
         node.add_child(self.accept(type="LBRACKET", value="["))
         node.add_child(self.range())
         
-        if(self.SYM["type"]=="COMMA"):
-            while(self.SYM["type"]=="COMMA"):
-                node.add_child(self.accept(type="COMMA"))
-                node.add_child(self.range())
+        # if(self.SYM["type"]=="COMMA"):
+        while(self.SYM["type"]=="COMMA"):
+            node.add_child(self.accept(type="COMMA"))
+            node.add_child(self.range())
 
         node.add_child(self.accept(type="RBRACKET", value="]"))
         node.add_child(self.accept(type="KEYWORD", value="dari"))
@@ -298,6 +298,7 @@ class Parser:
         if self.SYM["type"] == "LPARENTHESIS" and self.SYM["value"] == "(":
             node.add_child(self.formal_parameter_list())
         node.add_child(self.accept(type="SEMICOLON", value=";"))
+        # mewakili block
         node.add_child(self.declaration_part())
         node.add_child(self.compound_statement())
         node.add_child(self.accept(type="SEMICOLON", value=";"))
@@ -467,10 +468,11 @@ class Parser:
         node.add_child(self.term())
         
         while self.SYM["type"] == "LOGICAL_OPERATOR" and (self.SYM["value"] == "atau" ) or self.SYM["type"] == "ARITHMETIC_OPERATOR" and (self.SYM["value"] == "+" or self.SYM["value"] == "-"):
-            if self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "atau":
-                node.add_child(self.accept(type="LOGICAL_OPERATOR", value="atau"))
-            else:
-                node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
+            # if self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "atau":
+            #     node.add_child(self.accept(type="LOGICAL_OPERATOR", value="atau"))
+            # else:
+            #     node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
+            node.add_child(self.additive_operator())
             node.add_child(self.term())
         
         return node
@@ -517,7 +519,7 @@ class Parser:
                 
         return node
     
-    #<variable> -> IDENTIFIER | IDENTIFIER + LBRACKET + parameter-list + RBRACKET |IDENTIFIER + DOT + IDENTIFIER
+    #<variable> -> IDENTIFIER | IDENTIFIER + (LBRACKET + parameter-list + RBRACKET)* |IDENTIFIER + (DOT + IDENTIFIER)*
     def variable(self):
         node = TreeNode("<variable>")
         node.add_child(self.accept(type="IDENTIFIER"))
@@ -627,7 +629,6 @@ class Parser:
         
         return node
 
-    # TODO: AYO COK YANG NGERJAIN INI DAPAT PAHALA
     #32 <case-statement> -> KEYWORD(kasus) + expression + KEYWORD(dari) 
     #                       + (const + (COMMA(",") + const)* + COLON + statement) 
     #                       + (SEMICOLON + const + (COMMA("," ) + const)* + COLON + statement)*
