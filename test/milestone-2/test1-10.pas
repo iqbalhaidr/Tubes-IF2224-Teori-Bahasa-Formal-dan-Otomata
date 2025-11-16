@@ -1,8 +1,8 @@
 program UjiSemua;
 
 konstanta
-  max := 10;
-  angka := 5;
+  max = 10;
+  angka = 5;
 
 tipe
   Angka = integer;

@@ -6,7 +6,7 @@ variabel
 
 prosedur namaProsedur1(r: integer; a: real);
   konstanta
-    pi := 3;
+    pi = 3;
 
   mulai
     jika r < 5 maka
@@ -22,7 +22,7 @@ prosedur namaProsedur2;
 
 fungsi namaFungsi1(r: integer) : real;
   konstanta
-    pi := 3;
+    pi = 3;
 
   mulai
     jika r < 5 maka

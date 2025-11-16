@@ -131,7 +131,7 @@ class Parser:
         node.add_child(self.accept(type="KEYWORD", value="konstanta"))
     
         node.add_child(self.accept(type="IDENTIFIER"))
-        node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
+        node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="="))
 
         node.add_child(self.const())
 
@@ -139,7 +139,7 @@ class Parser:
 
         while self.SYM["type"] == "IDENTIFIER":
             node.add_child(self.accept(type="IDENTIFIER"))
-            node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
+            node.add_child(self.accept(type="RELATIONAL_OPERATOR", value="="))
             
             node.add_child(self.const())
             node.add_child(self.accept(type="SEMICOLON"))

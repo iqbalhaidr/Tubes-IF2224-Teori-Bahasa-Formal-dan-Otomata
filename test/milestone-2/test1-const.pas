@@ -1,9 +1,9 @@
 program ConstTest;
 
 konstanta
-  satu := 1;
-  dua := 2;
-  tiga := 3;
+  satu = 1;
+  dua = 2;
+  tiga = 3;
 
 variabel
   x : integer;

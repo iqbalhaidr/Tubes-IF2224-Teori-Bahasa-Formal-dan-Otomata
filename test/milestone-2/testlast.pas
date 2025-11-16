@@ -1,10 +1,10 @@
 program UjiParserLengkap;
 
 konstanta
-  MAXSIZE := 100;
-  NAMAKURSUS := 'TBFO IF2224';
-  KARAKTERA := 'a';
-  PI := 3.14159;
+  MAXSIZE = 100;
+  NAMAKURSUS = 'TBFO IF2224';
+  KARAKTERA = 'a';
+  PI = 3.14159;
 
 tipe
   RentangAngka = 1..MAXSIZE;
