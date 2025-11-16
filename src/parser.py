@@ -47,9 +47,9 @@ class Parser:
             self.next_SYM_idx = self.next_SYM_idx + 1
 
     def accept(self, type, value=None):
-        print(self.SYM["type"] + " ini nilai type")
-        print(self.SYM["value"] + " ini nilai value")
-        print()
+        # print(self.SYM["type"] + " ini nilai type")
+        # print(self.SYM["value"] + " ini nilai value")
+        # print()
         if (self.SYM["type"] != type or (value is not None and self.SYM["value"] != value)):
             expected_str = f"{type}({value})" if value is not None else type
             got_str = f"{self.SYM['type']}({self.SYM['value']})"
@@ -133,15 +133,7 @@ class Parser:
         node.add_child(self.accept(type="IDENTIFIER"))
         node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
 
-        if self.SYM["type"] == "NUMBER":
-            node.add_child(self.number_statement())
-        elif self.SYM["type"] == "CHAR_LITERAL":
-            node.add_child(self.accept(type="CHAR_LITERAL"))
-        elif self.SYM["type"] == "STRING_LITERAL":
-            node.add_child(self.accept(type="STRING_LITERAL"))
-        else:
-            print(f"Syntax error: expected constant value, got {self.SYM['value']}")
-            sys.exit()
+        node.add_child(self.const())
 
         node.add_child(self.accept(type="SEMICOLON"))
 
@@ -149,16 +141,7 @@ class Parser:
             node.add_child(self.accept(type="IDENTIFIER"))
             node.add_child(self.accept(type="ASSIGN_OPERATOR", value=":="))
             
-            if self.SYM["type"] == "NUMBER":
-                node.add_child(self.number_statement())
-            elif self.SYM["type"] == "CHAR_LITERAL":
-                node.add_child(self.accept(type="CHAR_LITERAL"))
-            elif self.SYM["type"] == "STRING_LITERAL":
-                node.add_child(self.accept(type="STRING_LITERAL"))
-            else:
-                print(f"Syntax error: expected constant value, got {self.SYM['value']}")
-                sys.exit()
-
+            node.add_child(self.const())
             node.add_child(self.accept(type="SEMICOLON"))
         return node
 
@@ -257,9 +240,14 @@ class Parser:
                 case "larik":
                     node.add_child(self.array_type())
                 case _:
-                    pass
+                    print("Syntax error: invalid keyword type")
+                    sys.exit
+                   
         elif self.SYM["type"] == "IDENTIFIER":
             node.add_child(self.accept(type="IDENTIFIER"))
+        else:
+            print("Syntax error: invalid type")
+            sys.exit()
         return node
 
     #9 <array-type> -> KEYWORD(larik) + LBRACKET + range + RBRACKET + KEYWORD(dari) + type
@@ -290,6 +278,9 @@ class Parser:
             node.add_child(self.procedure_declaration())
         elif self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "fungsi":
             node.add_child(self.function_declaration())
+        else:
+            print("Syntax eror in subprogram declaration")
+            sys.exit()
         return node
 
     #12 <procedure-declaration> -> KEYWORD(prosedur) + IDENTIFIER + (formal-parameter-list)? + SEMICOLON + block + SEMICOLON
@@ -515,7 +506,9 @@ class Parser:
                 node.add_child(self.accept(type="LOGICAL_OPERATOR", value="tidak"))
                 node.add_child(self.factor())
             case _:
-                pass
+                print("Syntax error in factor")
+                sys.exit()
+                
         return node
     
     #<variable> -> IDENTIFIER | IDENTIFIER + LBRACKET + parameter-list + RBRACKET |IDENTIFIER + DOT + IDENTIFIER
@@ -551,6 +544,9 @@ class Parser:
                 node.add_child(self.accept(type="RELATIONAL_OPERATOR", value=">"))
             case {"type": "RELATIONAL_OPERATOR", "value": ">="}:
                 node.add_child(self.accept(type="RELATIONAL_OPERATOR", value=">="))
+            case _:
+                print("Syntax error: invalid relational operator")
+                sys.exit()
         return node
     
     #29 <additive-operator> -> +|-|atau
@@ -564,7 +560,9 @@ class Parser:
             node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="-"))
         elif((self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "atau")):
             node.add_child(self.accept(type="LOGICAL_OPERATOR", value="atau"))
-        
+        else:
+            print("Syntax error: invalid additive operator")
+            sys.exit()
         return node
 
     
@@ -632,11 +630,11 @@ class Parser:
         node.add_child(self.expression())
         node.add_child(self.accept(type="KEYWORD", value="dari"))
 
-        node.add_child(self.const())
+        node.add_child(self.const(kasus= True))
         
         while (self.SYM["type"]== "COMMA"):
             node.add_child(self.accept(type="COMMA"))
-            node.add_child(self.const())
+            node.add_child(self.const(kasus= True))
 
         node.add_child(self.accept(type="COLON"))
         node.add_child(self.statement())
@@ -646,11 +644,11 @@ class Parser:
 
             if(self.SYM["value"]=="akhir"):
                 break
-            node.add_child(self.const())
+            node.add_child(self.const(kasus= True))
         
             while (self.SYM["type"]== "COMMA"):
                 node.add_child(self.accept(type="COMMA"))
-                node.add_child(self.const())
+                node.add_child(self.const(kasus= True))
 
             node.add_child(self.accept(type="COLON"))
             node.add_child(self.statement())
@@ -659,28 +657,33 @@ class Parser:
         return node
 
     #33 <const> -> ((ARITHMETIC_OPERATOR(+)|ARITHMETIC_OPERATOR(-))? (NUMBER)) | (CHAR_LITERAL) | (IDENTIFIER)
-    def const(self):
+    def const(self, kasus = False):
         node = TreeNode("<const>")
-    
+        # print('masuk const')
         if(self.SYM["type"]== "ARITHMETIC_OPERATOR" and (self.SYM["value"] in ["+", "-"])):
             node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
-            if (self.SYM["type"]== "NUMBER") :
+            if(kasus) :
                 node.add_child(self.accept(type="NUMBER"))
             else:
-                print("Syntax eror: Unary + or - must be followed by NUMBER")
-                sys.exit()
-        
-        elif (self.SYM["type"]== "NUMBER"):
+                node.add_child(self.number_statement())
+
+        elif (self.SYM["type"]== "NUMBER" and kasus):
             node.add_child(self.accept(type="NUMBER"))
+        
+        elif (self.SYM["type"]== "NUMBER" ):
+            node.add_child(self.number_statement())
 
         elif (self.SYM["type"]== "IDENTIFIER"):
             node.add_child(self.accept(type="IDENTIFIER"))
 
         elif(self.SYM["type"]== "CHAR_LITERAL"):
             node.add_child(self.accept(type="CHAR_LITERAL"))
+
+        elif(self.SYM["type"]== "STRING_LITERAL"):
+            node.add_child(self.accept(type="STRING_LITERAL"))
         
         else:
-            print(f"Syntax error: Invalid constant literal → {self.SYM}")
+            print(f"Syntax error: Invalid constant literal in {self.SYM}")
             sys.exit()
     
         return node

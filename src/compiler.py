@@ -79,6 +79,9 @@ with open(f"{filePath}", "r") as f:
             if current_state in dfa["final_states"].keys() and value:
                 token_type = dfa["final_states"][current_state]["type"]
                 list_tokens.append(f"{token_type}({value})")
+            #handle char atau string tidak di close
+            elif(current_state == 'q4' or current_state == 'q2'):
+                list_tokens.append(f"<Eror String not closed>({value})")
             break
 
 
