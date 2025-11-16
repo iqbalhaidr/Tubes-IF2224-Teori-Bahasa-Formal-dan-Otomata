@@ -257,6 +257,12 @@ class Parser:
         node.add_child(self.accept(type="KEYWORD", value="larik"))
         node.add_child(self.accept(type="LBRACKET", value="["))
         node.add_child(self.range())
+        
+        if(self.SYM["type"]=="COMMA"):
+            while(self.SYM["type"]=="COMMA"):
+                node.add_child(self.accept(type="COMMA"))
+                node.add_child(self.range())
+
         node.add_child(self.accept(type="RBRACKET", value="]"))
         node.add_child(self.accept(type="KEYWORD", value="dari"))
         node.add_child(self.type())
@@ -580,6 +586,9 @@ class Parser:
             node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="mod"))
         elif((self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "dan")):
             node.add_child(self.accept(type="LOGICAL_OPERATOR", value="dan"))
+        else:
+            print("Syntax error invalid multiplicative op")
+            sys.exit()
         
         return node
      
