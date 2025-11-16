@@ -108,7 +108,6 @@ class Parser:
         # (const-declaration)*
         while self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "konstanta":
             node.add_child(self.const_declaration())
-        # print("Parsed const declaration")
         # (type-declaration)*
         while self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "tipe":
             node.add_child(self.type_declaration())
@@ -190,17 +189,12 @@ class Parser:
         node = TreeNode("<var-declaration>")
 
         node.add_child(self.accept(type="KEYWORD", value="variabel"))
-        # print("masuk parsing var declaration")
         
         # pastikan minimal 1 kali kemunculan (identifier-list + COLON + type + SEMICOLON)
         node.add_child(self.identifier_list())
         node.add_child(self.accept(type="COLON", value=":"))
-        # print("2")
         node.add_child(self.type())
-        # print("3")
         node.add_child(self.accept(type="SEMICOLON", value=";"))
-
-        # print("selesai 1 parsing var declaration")
 
         while self.SYM["type"] == "IDENTIFIER":
             node.add_child(self.identifier_list())
@@ -417,7 +411,7 @@ class Parser:
             case {"type": "KEYWORD", "value": "turunke"}:
                 node.add_child(self.accept(type="KEYWORD", value="turunke"))
             case _:
-                sys.exit("Error: Expected 'ke' or 'turun-ke'! (<statement>) Exiting program")
+                sys.exit("Error: Expected 'ke' or 'turunke'! (<statement>) Exiting program")
 
         node.add_child(self.expression())
         node.add_child(self.accept(type="KEYWORD", value="lakukan"))
@@ -468,10 +462,6 @@ class Parser:
         node.add_child(self.term())
         
         while self.SYM["type"] == "LOGICAL_OPERATOR" and (self.SYM["value"] == "atau" ) or self.SYM["type"] == "ARITHMETIC_OPERATOR" and (self.SYM["value"] == "+" or self.SYM["value"] == "-"):
-            # if self.SYM["type"] == "LOGICAL_OPERATOR" and self.SYM["value"] == "atau":
-            #     node.add_child(self.accept(type="LOGICAL_OPERATOR", value="atau"))
-            # else:
-            #     node.add_child(self.accept(type="ARITHMETIC_OPERATOR"))
             node.add_child(self.additive_operator())
             node.add_child(self.term())
         
@@ -601,23 +591,21 @@ class Parser:
 
         match self.SYM:
             case {"type": "IDENTIFIER"}:
-                # Kita gaskan jadi LL2 lah anjeng. ini intinya cek type next SYM tanpa increment next_SYM_idx
+                # intinya cek type next SYM tanpa increment next_SYM_idx
                 next_SYM = self.peek()
                 next_SYM_type = next_SYM["type"] if next_SYM else None
                 if next_SYM_type == "LPARENTHESIS":
                     node.add_child(self.procedure_function_call())
                 else:
                     node.add_child(self.assignment_statement())
-                # else:
-                #     sys.exit("Error: Expected ':=' or '(' after identifier! (<statement>) Exiting program")
+
             case {"type": "KEYWORD", "value": "mulai"}:
                 node.add_child(self.compound_statement())
             case {"type": "KEYWORD", "value": "jika"}:
                 node.add_child(self.if_statement())
             case {"type": "KEYWORD", "value": "kasus"}:
-                # TODO: Implementasi case_statement()
                 node.add_child(self.case_statement())
-                # sys.exit("<case-statement> belum diimplmentasikan woy! Exiting program")
+
             case {"type": "KEYWORD", "value": "selama"}:
                 node.add_child(self.while_statement())
             case {"type": "KEYWORD", "value": "ulangi"}:
