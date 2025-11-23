@@ -1,6 +1,8 @@
 import json
 import sys
 from parser import Parser
+from ast_print import *
+from ast_builder import *
 import os
 
 def match_pattern(pattern, char):
@@ -129,4 +131,9 @@ for token in list_tokens:
 
 print("============ Parse Output ============")
 p = Parser(list_tokens)
-p.parse()
+parse_tree = p.parse()
+
+ast_builder = AST_Builder(parse_tree)
+ast = ast_builder.build()
+
+print_ast(ast, indent_size=2)

@@ -3,7 +3,7 @@ import sys
 class TreeNode:
     def __init__(self, name):
         self.name = name
-        self.children = []
+        self.children : list[TreeNode] = []
 
     def add_child(self, node):
         self.children.append(node)
@@ -80,6 +80,7 @@ class Parser:
 
         print("Parse success, code error free")
         result.display()
+        return result
 
     #1 <program> -> <program-header> + <declaration-part> + <compound-statement> + DOT
     def program(self):
@@ -298,7 +299,7 @@ class Parser:
         node.add_child(self.accept(type="SEMICOLON", value=";"))
         return node
 
-    #13 <function-declaration> -> KEYWORD(fungsi) + IDENTIFIER + (formal-parameter-list)? + COLON + type + SEMICOLON + block + SEMICOLON
+    #13 <function-declaration> -> KEYWORD(fungsi) + IDENTIFIER + (formal-parameter-list)? + COLON + type + SEMICOLON + dec + com + SEMICOLON
     def function_declaration(self):
         node = TreeNode("<function-declaration>")
         node.add_child(self.accept(type="KEYWORD", value="fungsi"))
@@ -502,6 +503,9 @@ class Parser:
                 node.add_child(self.accept(type="RPARENTHESIS"))
             case {"type": "LOGICAL_OPERATOR", "value": "tidak"}:
                 node.add_child(self.accept(type="LOGICAL_OPERATOR", value="tidak"))
+                node.add_child(self.factor())
+            case {"type": "ARITHMETIC_OPERATOR", "value": "-"}:
+                node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="-"))
                 node.add_child(self.factor())
             case _:
                 print("Syntax error in factor")
