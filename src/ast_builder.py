@@ -257,12 +257,13 @@ class AST_Builder:
 
     def visit_procedure_call(self, node: TreeNode):
         name = self._extract_value(node.children[0].name)
-        args = self.visit_formal_parameter_list(node.children[2]) if len(node.children) > 2 else []
+        print('P masuk procedure_call')
+        args = self.visit(node.children[2]) if len(node.children) > 2 else []
         return ProcedureCallNode(name, args)
 
     def visit_function_call(self, node):
         name = self._extract_value(node.children[0].name)
-        args = self.visit_formal_parameter_list(node.children[2]) if len(node.children) > 2 else []
+        args = self.visit(node.children[2]) if len(node.children) > 2 else []
         return FunctionCallNode(name, args)
     
     # EXPRESSIONS
