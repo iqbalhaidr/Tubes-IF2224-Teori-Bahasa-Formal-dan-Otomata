@@ -3,6 +3,7 @@ import sys
 from parser import Parser
 from ast_print import *
 from ast_builder import *
+from semantic_analyzer import *
 import os
 
 def match_pattern(pattern, char):
@@ -133,7 +134,17 @@ print("============ Parse Output ============")
 p = Parser(list_tokens)
 parse_tree = p.parse()
 
+print("============ AST Output ============")
 ast_builder = AST_Builder(parse_tree)
 ast = ast_builder.build()
-
 print_ast(ast, indent_size=2)
+
+print("============ Symbol Table Output ============")
+analyzer = SemanticAnalyzer()
+try:
+    analyzer.visit(ast)
+    analyzer.print_all_tables()
+    
+except SemanticError as e:
+    print(f"\n[SEMANTIC ERROR]: {e}")
+    pass
