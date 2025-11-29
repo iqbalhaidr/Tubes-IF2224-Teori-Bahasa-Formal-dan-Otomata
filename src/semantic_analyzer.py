@@ -784,8 +784,8 @@ class SemanticAnalyzer:
     def print_all_tables(self):
         # Mapping Tipe Data untuk display yang lebih user-friendly
         TYPE_MAP = {
-            0: 'UNDEF', 1: 'INT', 2: 'REAL', 3: 'BOOL', 
-            4: 'CHAR', 5: 'ARRAY', 6: 'RECORD', 7: 'STR'
+            0: 'undef', 1: 'int', 2: 'real', 3: 'boolean', 
+            4: 'char', 5: 'array', 6: 'record', 7: 'string'
         }
 
         print("\n" + "="*90)
@@ -810,12 +810,12 @@ class SemanticAnalyzer:
         print(f"{'BTAB (Block Table)':^60}")
         print("="*60)
         # Header sesuai spesifikasi Hal 13
-        print(f"{'blocks':<5} {'last':<8} {'lpar':<8} {'psze':<8} {'vsze':<8}")
+        print(f"{'blocks':<8} {'last':<8} {'lpar':<8} {'psze':<8} {'vsze':<8}")
         print("-" * 60)
         
         for i, item in enumerate(self.btab):
             # Menggunakan index list sebagai IDX block
-            print(f"{i:<5} {item['last']:<8} {item['lpar']:<8} {item['psze']:<8} {item['vsze']:<8}")
+            print(f"{i:<8} {item['last']:<8} {item['lpar']:<8} {item['psze']:<8} {item['vsze']:<8}")
 
         print("\n" + "="*80)
         print(f"{'ATAB (Array Table)':^80}")
@@ -825,14 +825,14 @@ class SemanticAnalyzer:
             print(" (Empty) ")
         else:
             # Header sesuai spesifikasi Hal 13
-            print(f"{'arrays':<5} {'xtyp':<8} {'etyp':<8} {'eref':<6} {'low':<6} {'high':<6} {'elsz':<6} {'size':<6}")
+            print(f"{'arrays':<8} {'xtyp':<8} {'etyp':<8} {'eref':<6} {'low':<6} {'high':<6} {'elsz':<6} {'size':<6}")
             print("-" * 80)
             
             for item in self.atab:
                 xtyp_str = TYPE_MAP.get(item['xtyp'], str(item['xtyp']))
                 etyp_str = TYPE_MAP.get(item['etyp'], str(item['etyp']))
                 
-                print(f"{item['arrays']:<5} {xtyp_str:<8} {etyp_str:<8} {item['eref']:<6} "
+                print(f"{item['arrays']:<8} {xtyp_str:<8} {etyp_str:<8} {item['eref']:<6} "
                     f"{item['low']:<6} {item['high']:<6} {item['elsz']:<6} {item['size']:<6}")
 
         print("="*80 + "\n")
