@@ -239,6 +239,9 @@ class NumberNode:
         self.type = None
         self.lev = None
 
+    def add_negative(self):
+        self.value = -self.value
+
 
 class StringNode:
     def __init__(self, value):

@@ -321,7 +321,7 @@ class SemanticAnalyzer:
             print(f"const_value: {const_value} ({type(const_value)})")
             final_adr = ord(const_value.strip("'"))   # Alamat = kode ASCII (cdc tuwir ga ada lowercase jadi tentatif)
         else:
-            final_adr = round(const_value) # kalau desimal buletin jd integer
+            final_adr = round(const_value) & 0xFFFFFFFF # kalau desimal buletin jd integer, kalau negatif jadi positif pake two's complement
 
         tab_idx = self.insert_tab(
             name=node.name, 
