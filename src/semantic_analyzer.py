@@ -380,6 +380,9 @@ class SemanticAnalyzer:
 
         # Update ukuran parameter di btab
         self.btab[blk_idx]["psze"] = total_psze
+        
+        # Update lastpar di btab
+        self.btab[blk_idx]["lpar"] = proc_idx + total_psze
 
         # 4. Proses Deklarasi Lokal & Body
         if node.declarations:
