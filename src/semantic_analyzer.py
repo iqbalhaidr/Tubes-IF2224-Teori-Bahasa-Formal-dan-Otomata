@@ -132,7 +132,7 @@ class SemanticAnalyzer:
         self.display[0] = 0
         self.level = 0
 
-    # ================= HELPER & TRAVERSAL =================
+    # ================= HELPER & TRAVERSAL & ISI ATRIBUT =================
     
     def visit(self, node):
         if node is None:
@@ -146,6 +146,13 @@ class SemanticAnalyzer:
     
     def generic_visit(self, node):
         raise SemanticError(f"No visit_{node.__class__.__name__} method defined")
+    
+    def decorate(self, node, type, idx=None, lev=None):
+        node.type = type
+        if idx is not None:
+            node.idx = idx
+        if lev is not None:
+            node.lev = lev
 
     # ================= SYMBOL TABLE MANAGEMENT =================
 
@@ -259,16 +266,21 @@ class SemanticAnalyzer:
         print(f"--- Analyzing Program: {node.name} ---")
         # Masukkan nama program ke scope global (atau biarkan di luar btab[0])
         # Di contoh spek, program masuk tab.
-        self.insert_tab(node.name, "program", TYPE_UNDEFINED, init=1)
+        tab_idx = self.insert_tab(node.name, "program", TYPE_UNDEFINED, init=1)
         
         if node.declarations:
             self.visit(node.declarations)
         
         if node.block:
             self.visit(node.block)
+        
+        self.decorate(node, type=None, idx=tab_idx, lev=self.level)
 
     def visit_BlockNode(self, node):
         self.visit(node.statements)
+        
+        btab_idx = self.display[self.level]
+        self.decorate(node, type=None, idx=btab_idx, lev=self.level)
 
     # ================= DECLARATIONS =================
 
@@ -278,13 +290,15 @@ class SemanticAnalyzer:
         if "value" not in visit_value or visit_value["value"] is None:
             raise SemanticError(f"Constant '{node.name}' value cannot be evaluated at compile time")
 
-        self.insert_tab(
+        tab_idx = self.insert_tab(
             name=node.name, 
             obj="konstanta", 
             type_code=visit_value["typecode"], 
             adr=visit_value["value"], 
             init=1
         )
+
+        self.decorate(node, type=visit_value["typecode"], idx=tab_idx, lev=self.level)
 
     def visit_VarDeclNode(self, node):
         # node.names bisa list (jika a, b: integer) atau single string tergantung ast_builder
@@ -297,7 +311,7 @@ class SemanticAnalyzer:
         type_code = visit_var_type["typecode"]
         ref = visit_var_type.get("ptr", -1)
         
-        self.insert_tab(
+        tab_idx = self.insert_tab(
             name=var_name, 
             obj="variabel", 
             type_code=type_code, 
@@ -305,15 +319,19 @@ class SemanticAnalyzer:
             init=0 
         )
 
+        self.decorate(node, type=type_code, idx=tab_idx, lev=self.level)
+
     def visit_TypeDeclNode(self, node):
         visit_type_node = self.visit(node.type_node)
-        self.insert_tab(
+        tab_idx = self.insert_tab(
             name=node.name,
             obj="tipe",
             type_code=visit_type_node["typecode"],
             ref=visit_type_node.get("ptr", -1),
             init=1 
         )
+
+        self.decorate(node, type=visit_type_node["typecode"], idx=tab_idx, lev=self.level)
 
     def visit_ProcedureDeclNode(self, node):
         proc_name = node.name
@@ -332,15 +350,22 @@ class SemanticAnalyzer:
         for param in node.params: 
             p_name = ""
             p_type_node = None
+            p_is_var = False # Default by value
             
             # Handling format tuple dari ast_builder
-            if isinstance(param, tuple):
+            if isinstance(param, tuple): # Harusnya udah ga mungkin masuk sini
                 p_name, p_type_node = param
             elif isinstance(param, VarDeclNode): # Jaga-jaga jika format berubah
                 p_name = param.names
                 p_type_node = param.var_type
+                p_is_var = param.is_var  # <-- BACA FLAG DARI AST
             
             type_res = self.visit(p_type_node)
+
+            # Tentukan nilai NRM
+            # Jika is_var True (pass by ref), nrm = 0
+            # Jika is_var False (pass by value), nrm = 1
+            nrm_val = 0 if p_is_var else 1
             
             # Masukkan parameter sebagai variabel lokal yang sudah di-init
             self.insert_tab(
@@ -349,7 +374,7 @@ class SemanticAnalyzer:
                 type_code=type_res["typecode"], 
                 ref=type_res.get("ptr", -1), 
                 init=1,
-                nrm=1 # Default pass-by-value, ubah 0 jika ada logic 'var' (reference)
+                nrm=nrm_val # <-- GUNAKAN NILAI INI
             )
             total_psze += 1
 
@@ -364,6 +389,8 @@ class SemanticAnalyzer:
         
         # 5. Keluar Scope
         self.exit_block()
+
+        self.decorate(node, type=None, idx=proc_idx, lev=self.level)
 
     def visit_FunctionDeclNode(self, node):
         func_name = node.name
@@ -384,15 +411,23 @@ class SemanticAnalyzer:
         for param in node.params:
             p_name = ""
             p_type_node = None
+            p_is_var = False # Default by value
             
-            if isinstance(param, tuple):
+            if isinstance(param, tuple): # Harusnya udah ga mungkin masuk sini
                 p_name, p_type_node = param
             elif isinstance(param, VarDeclNode):
                 p_name = param.names
                 p_type_node = param.var_type
+                p_is_var = param.is_var  # <-- BACA FLAG DARI AST
 
             type_res = self.visit(p_type_node)
-            self.insert_tab(p_name, "variabel", type_res["typecode"], ref=type_res.get("ptr", -1), init=1)
+
+            # Tentukan nilai NRM
+            # Jika is_var True (pass by ref), nrm = 0
+            # Jika is_var False (pass by value), nrm = 1
+            nrm_val = 0 if p_is_var else 1
+
+            self.insert_tab(p_name, "variabel", type_res["typecode"], ref=type_res.get("ptr", -1), init=1, nrm=nrm_val)
             total_psze += 1
             
         self.btab[blk_idx]["psze"] = total_psze
@@ -407,6 +442,8 @@ class SemanticAnalyzer:
         self.visit(node.body)
         self.exit_block()
 
+        self.decorate(node, type=ret_code, idx=func_idx, lev=self.level)
+
     # ================= TYPES =================
 
     def visit_BuiltinTypeNode(self, node):
@@ -414,7 +451,10 @@ class SemanticAnalyzer:
             "integer": TYPE_INTEGER, "real": TYPE_REAL,
             "boolean": TYPE_BOOLEAN, "char": TYPE_CHAR
         }
-        return {"typecode": mapping.get(node.info, TYPE_UNDEFINED)}
+
+        typecode = mapping.get(node.info, TYPE_UNDEFINED)
+        self.decorate(node, type=typecode, idx=None, lev=None)
+        return {"typecode": typecode}
 
     def visit_CustomTypeNode(self, node):
         tab_entry = self.lookup(node.info)
@@ -422,6 +462,7 @@ class SemanticAnalyzer:
             raise SemanticError(f"Undeclared type: {node.info}")
         if tab_entry["obj"] != "tipe":
             raise SemanticError(f"{node.info} is not a type identifier")
+        self.decorate(node, type=tab_entry["type"], idx=tab_entry["idx"], lev=tab_entry["lev"])
         return {"typecode": tab_entry["type"], "ptr": tab_entry["ref"]}
 
     def visit_ArrayTypeNode(self, node):
@@ -440,6 +481,7 @@ class SemanticAnalyzer:
         visit_element_type = self.visit(node.info["element_type"])
         atab_idx = self.insert_atab(TYPE_INTEGER, visit_element_type["typecode"], low, high, visit_element_type.get("ptr", -1))
         
+        self.decorate(node, type=TYPE_ARRAY, idx=atab_idx, lev=None)
         return {"typecode": TYPE_ARRAY, "ptr": atab_idx}
 
     def visit_RecordTypeNode(self, node):
@@ -451,6 +493,7 @@ class SemanticAnalyzer:
             self.insert_tab(name, "variabel", visit_type_node["typecode"], ref=visit_type_node.get("ptr", -1), init=1)
             
         self.exit_block() 
+        self.decorate(node, type=TYPE_RECORD, idx=new_idx, lev=None)
         return {"typecode": TYPE_RECORD, "ptr": new_idx}
 
     # ================= STATEMENTS =================
@@ -477,6 +520,11 @@ class SemanticAnalyzer:
                 if not (lhs_type == TYPE_REAL and rhs_type == TYPE_INTEGER) and lhs_type != rhs_type:
                     raise SemanticError(f"Type mismatch assign '{name}': {lhs_type} := {rhs_type}")
             
+            # [PERBAIKAN DISINI]
+            # Karena kita tidak memanggil visit_VarNode (takut error uninitialized),
+            # Kita harus decorate manual di sini supaya AST-nya cantik.
+            self.decorate(target, type=tab_entry["type"], idx=tab_entry["idx"], lev=tab_entry["lev"])
+
             # Jika target kompleks, validasi tipe dilakukan di visit_Access
             # Tapi kita tandai variabel akar sebagai sudah diinisialisasi
             tab_entry["init"] = 1
@@ -488,6 +536,8 @@ class SemanticAnalyzer:
                  # Allow int to real
                  if not (lhs["typecode"] == TYPE_REAL and rhs_type == TYPE_INTEGER):
                     raise SemanticError("Type mismatch in complex assignment")
+        
+        self.decorate(node, type=TYPE_UNDEFINED, idx=None, lev=None)
 
     def visit_IfNode(self, node):
         cond = self.visit(node.cond)
@@ -495,12 +545,15 @@ class SemanticAnalyzer:
             raise SemanticError("IF condition must be boolean")
         self.visit(node.then_stmt)
         if node.else_stmt: self.visit(node.else_stmt)
+        self.decorate(node, type=None, idx=None, lev=self.level)
 
     def visit_WhileNode(self, node):
         cond = self.visit(node.cond)
         if cond["typecode"] != TYPE_BOOLEAN:
             raise SemanticError("WHILE condition must be boolean")
         self.visit(node.body)
+
+        self.decorate(node, type=None, idx=None, lev=self.level)
 
     def visit_ForNode(self, node):
         entry = self.lookup(node.var)
@@ -516,11 +569,15 @@ class SemanticAnalyzer:
         entry["init"] = 1
         self.visit(node.body)
 
+        self.decorate(node, type=None, idx=None, lev=self.level)
+
     def visit_RepeatNode(self, node):
         self.visit(node.body) 
         until = self.visit(node.until)
         if until["typecode"] != TYPE_BOOLEAN:
             raise SemanticError("REPEAT-UNTIL condition must be boolean")
+        
+        self.decorate(node, type=None, idx=None, lev=self.level)
 
     def visit_CaseNode(self, node):
         selector = self.visit(node.expr)
@@ -535,6 +592,8 @@ class SemanticAnalyzer:
                 if lbl_res["typecode"] != sel_type:
                     raise SemanticError("CASE label type mismatch with selector")
             self.visit(branch.stmt)
+
+        self.decorate(node, type=None, idx=None, lev=self.level)
 
     def visit_ProcedureCallNode(self, node):
         entry = self.lookup(node.name)
@@ -552,6 +611,8 @@ class SemanticAnalyzer:
         # Visit args
         if hasattr(node, 'args') and isinstance(node.args, list):
             for arg in node.args: self.visit(arg)
+
+        self.decorate(node, type=None, idx=entry["idx"], lev=entry["lev"])
 
     # ================= EXPRESSIONS =================
 
@@ -614,6 +675,7 @@ class SemanticAnalyzer:
             else:
                 raise SemanticError("Logical operators require booleans")
         
+        self.decorate(node, type=res["typecode"], idx=None, lev=None)
         return res
 
     def visit_UnaryOpNode(self, node):
@@ -633,6 +695,7 @@ class SemanticAnalyzer:
                 raise SemanticError("NOT requires boolean")
             if has_val: final_res["value"] = not res["value"]
             
+        self.decorate(node, type=final_res["typecode"], idx=None, lev=None)
         return final_res
 
     def visit_VarNode(self, node):
@@ -643,6 +706,7 @@ class SemanticAnalyzer:
         if tab_entry["obj"] == "variabel" and tab_entry["init"] == 0:
             raise SemanticError(f"Variable '{node.name}' not initialized yet")
             
+        self.decorate(node, type=tab_entry["type"], idx=tab_entry["idx"], lev=None)
         return {
             "typecode": tab_entry["type"],
             "ptr": tab_entry["ref"],
@@ -657,6 +721,7 @@ class SemanticAnalyzer:
         if hasattr(node, 'args') and isinstance(node.args, list):
             for arg in node.args: self.visit(arg)
         
+        self.decorate(node, type=entry["type"], idx=entry["idx"], lev=entry["lev"])
         return {"typecode": entry["type"]} 
 
     def visit_ArrayAccessNode(self, node):
@@ -674,6 +739,7 @@ class SemanticAnalyzer:
         if visit_index["typecode"] != atab_entry["xtyp"]:
             raise SemanticError("Array index type mismatch")
             
+        self.decorate(node, type=None, idx=atab_idx, lev=None)
         return {"typecode": atab_entry["etyp"], "ptr": atab_entry["eref"]}
 
     def visit_RecordAccessNode(self, node):
@@ -691,21 +757,26 @@ class SemanticAnalyzer:
 
         if lookup_field is None:
             raise SemanticError(f"Field '{node.field}' not found in record")
-            
+        
+        self.decorate(node, type=None, idx=btab_idx, lev=lookup_field["idx"])
         return {"typecode": lookup_field["type"], "ptr": lookup_field["ref"]}
 
     # --- LITERALS ---
     def visit_NumberNode(self, node):
         tc = TYPE_REAL if isinstance(node.value, float) else TYPE_INTEGER
+        self.decorate(node, type=tc, idx=None, lev=None)
         return {"typecode": tc, "value": node.value}
 
     def visit_StringNode(self, node):
+        self.decorate(node, type=TYPE_STRING, idx=None, lev=None)
         return {"typecode": TYPE_STRING, "value": node.value}
 
     def visit_CharNode(self, node):
+        self.decorate(node, type=TYPE_CHAR, idx=None, lev=None)
         return {"typecode": TYPE_CHAR, "value": node.value}
 
     def visit_BooleanNode(self, node):
+        self.decorate(node, type=TYPE_BOOLEAN, idx=None, lev=None)
         return {"typecode": TYPE_BOOLEAN, "value": node.value}
     
 
@@ -717,25 +788,29 @@ class SemanticAnalyzer:
             4: 'CHAR', 5: 'ARRAY', 6: 'RECORD', 7: 'STR'
         }
 
-        print("\n" + "="*80)
-        print(f"{'TAB (Identifier Table)':^80}")
-        print("="*80)
+        print("\n" + "="*90)
+        print(f"{'TAB (Identifier Table)':^90}")
+        print("="*90)
         # Header sesuai spesifikasi Hal 12
-        print(f"{'IDX':<5} {'ID':<15} {'OBJ':<10} {'TYPE':<8} {'REF':<5} {'NRM':<5} {'LEV':<5} {'ADR':<10} {'INIT':<5} {'LINK':<5}")
-        print("-" * 80)
+        # print(f"{'IDX':<5} {'ID':<15} {'OBJ':<10} {'TYPE':<8} {'REF':<5} {'NRM':<5} {'LEV':<5} {'ADR':<10} {'INIT':<5} {'LINK':<5}")
+        print(f"{'idx':<5} {'identifiers':<15} {'link':<6} {'obj':<12} {'typ':<8} {'ref':<6} {'nrm':<5} {'lev':<5} {'adr':<10} {'init':<5}")
+        print("-" * 90)
         
         for item in self.tab:
             t_str = TYPE_MAP.get(item['type'], str(item['type']))
             # Formatting alignment
-            print(f"{item['idx']:<5} {item['id']:<15} {item['obj']:<10} {t_str:<8} "
-                f"{item['ref']:<5} {item['nrm']:<5} {item['lev']:<5} {str(item['adr']):<10} "
-                f"{item['init']:<5} {item['link']:<5}")
+            # print(f"{item['idx']:<5} {item['id']:<15} {item['obj']:<10} {t_str:<8} "
+            #     f"{item['ref']:<5} {item['nrm']:<5} {item['lev']:<5} {str(item['adr']):<10} "
+            #     f"{item['init']:<5} {item['link']:<5}")
+            print(f"{item['idx']:<5} {item['id']:<15} {item['link']:<6} {item['obj']:<12} "
+                  f"{t_str:<8} {item['ref']:<6} {item['nrm']:<5} {item['lev']:<5} "
+                  f"{str(item['adr']):<10} {item['init']:<5}")
 
         print("\n" + "="*60)
         print(f"{'BTAB (Block Table)':^60}")
         print("="*60)
         # Header sesuai spesifikasi Hal 13
-        print(f"{'IDX':<5} {'LAST':<8} {'LPAR':<8} {'PSZE':<8} {'VSZE':<8}")
+        print(f"{'blocks':<5} {'last':<8} {'lpar':<8} {'psze':<8} {'vsze':<8}")
         print("-" * 60)
         
         for i, item in enumerate(self.btab):
@@ -750,7 +825,7 @@ class SemanticAnalyzer:
             print(" (Empty) ")
         else:
             # Header sesuai spesifikasi Hal 13
-            print(f"{'IDX':<5} {'XTYP':<8} {'ETYP':<8} {'EREF':<6} {'LOW':<6} {'HIGH':<6} {'ELSZ':<6} {'SIZE':<6}")
+            print(f"{'arrays':<5} {'xtyp':<8} {'etyp':<8} {'eref':<6} {'low':<6} {'high':<6} {'elsz':<6} {'size':<6}")
             print("-" * 80)
             
             for item in self.atab:

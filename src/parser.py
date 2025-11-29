@@ -323,10 +323,18 @@ class Parser:
         node = TreeNode("<formal-parameter-list>")
         node.add_child(self.accept(type="LPARENTHESIS"))
 
+        # Accept keyword var jika ada, LPARENTHESIS + KEYWORD(var)? + parameter-group (SEMICOLON + KEYWORD(var)? + parameter-group)* + RPARENTHESIS
+        if self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "var":
+            node.add_child(self.accept(type="KEYWORD", value="var"))
+
         node.add_child(self.parameter_group())
 
         while self.SYM["type"] == "SEMICOLON":
             node.add_child(self.accept(type="SEMICOLON"))
+
+            if self.SYM["type"] == "KEYWORD" and self.SYM["value"] == "var":
+                node.add_child(self.accept(type="KEYWORD", value="var"))
+
             node.add_child(self.parameter_group())
 
         node.add_child(self.accept(type="RPARENTHESIS"))

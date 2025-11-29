@@ -137,7 +137,7 @@ parse_tree = p.parse()
 print("============ AST Output ============")
 ast_builder = AST_Builder(parse_tree)
 ast = ast_builder.build()
-print_ast(ast, indent_size=2)
+# print_ast(ast, indent_size=2)
 
 print("============ Symbol Table Output ============")
 analyzer = SemanticAnalyzer()
@@ -148,3 +148,5 @@ try:
 except SemanticError as e:
     print(f"\n[SEMANTIC ERROR]: {e}")
     pass
+
+print_ast(ast, indent_size=2)

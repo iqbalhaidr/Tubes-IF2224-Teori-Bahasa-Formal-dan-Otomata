@@ -74,7 +74,7 @@ class AST_Builder:
             names = self._extract_identifier_list(node.children[idx])
             type_node = self.visit_type(node.children[idx + 2])
             
-            declarations.extend([VarDeclNode(name, type_node) for name in names])
+            declarations.extend([VarDeclNode(name, type_node, is_var=False) for name in names]) # Asumsi var declaration itu tidak ada yang berupa pointer??
             idx += 4
 
         return declarations
@@ -159,11 +159,46 @@ class AST_Builder:
 
         return FunctionDeclNode(name, params, return_type, decl_part, body)
 
+    # def visit_formal_parameter_list(self, node: TreeNode):
+    #     params = []
+    #     for child in node.children[1:-1]:  # Skip LPARENTHESIS and RPARENTHESIS
+    #         if child.name == "<parameter-group>":
+    #             params.extend(self.visit(child))
+    #     return params
+
     def visit_formal_parameter_list(self, node: TreeNode):
         params = []
-        for child in node.children[1:-1]:  # Skip LPARENTHESIS and RPARENTHESIS
-            if child.name == "<parameter-group>":
-                params.extend(self.visit(child))
+        idx = 1 # Skip LPARENTHESIS
+
+        while idx < len(node.children) - 1: # Loop sampai sebelum RPARENTHESIS
+            child = node.children[idx]
+            
+            # 1. Cek apakah ada SEMICOLON (pemisah antar grup)
+            if child.name.startswith("SEMICOLON"):
+                idx += 1
+                continue
+
+            # 2. Cek apakah ada keyword VAR
+            is_var = False
+            if child.name == "KEYWORD(var)" or child.name == "KEYWORD(variabel)":
+                is_var = True
+                idx += 1 # Maju ke parameter-group
+            
+            # 3. Proses Parameter Group
+            # Pastikan idx sekarang menunjuk ke <parameter-group>
+            if idx < len(node.children) and node.children[idx].name == "<parameter-group>":
+                # Ambil hasil dari parameter group (list of (name, type))
+                group_results = self.visit_parameter_group(node.children[idx])
+                
+                # Konversi menjadi VarDeclNode dengan flag is_var
+                for name, type_node in group_results:
+                    # Buat node dengan info is_var
+                    params.append(VarDeclNode(name, type_node, is_var))
+                
+                idx += 1
+            else:
+                idx += 1 # Safety increment jika struktur tree tidak sesuai
+                
         return params
 
     def visit_parameter_group(self, node: TreeNode):
@@ -257,12 +292,13 @@ class AST_Builder:
 
     def visit_procedure_call(self, node: TreeNode):
         name = self._extract_value(node.children[0].name)
-        args = self.visit_formal_parameter_list(node.children[2]) if len(node.children) > 2 else []
+        print('P masuk procedure_call')
+        args = self.visit(node.children[2]) if len(node.children) > 2 else []
         return ProcedureCallNode(name, args)
 
     def visit_function_call(self, node):
         name = self._extract_value(node.children[0].name)
-        args = self.visit_formal_parameter_list(node.children[2]) if len(node.children) > 2 else []
+        args = self.visit(node.children[2]) if len(node.children) > 2 else []
         return FunctionCallNode(name, args)
     
     # EXPRESSIONS
