@@ -201,6 +201,27 @@ class SemanticAnalyzer:
         """Turun level"""
         self.level -= 1
 
+    def get_type_size(self, type_code, type_ref=-1):
+        """Mengembalikan unit size memori untuk tipe data tertentu."""
+        if type_code == TYPE_INTEGER:
+            return SIZE_INTEGER
+        elif type_code == TYPE_REAL:
+            return SIZE_REAL
+        elif type_code == TYPE_BOOLEAN:
+            return SIZE_BOOLEAN
+        elif type_code == TYPE_CHAR:
+            return SIZE_CHAR
+        elif type_code == TYPE_ARRAY:
+            if type_ref != -1 and type_ref < len(self.atab):
+                return self.atab[type_ref]["size"]
+            raise SemanticError(f"Referensi array tidak valid (ref: {type_ref}) saat menghitung ukuran.")
+        elif type_code == TYPE_RECORD:
+            if type_ref != -1 and type_ref < len(self.btab):
+                return self.btab[type_ref]["vsze"]
+            raise SemanticError(f"Referensi record tidak valid (ref: {type_ref}) saat menghitung ukuran.")
+        return 0
+
+
     def insert_tab(self, name, obj, type_code, ref=-1, nrm=1, adr=0, init=0):
         btab_idx = self.display[self.level]
         link_head = self.btab[btab_idx]["last"]
@@ -236,9 +257,9 @@ class SemanticAnalyzer:
         self.btab[btab_idx]["last"] = new_idx
         
         # Update Variable Size (vsze) jika ini variabel (bukan param, bukan type)
-        if obj == "variabel" and init == 0: 
-             # Asumsi size = 1 untuk simplifikasi Milestone 3, realnya hitung berdasarkan tipe
-             self.btab[btab_idx]["vsze"] += 1
+        # if obj == "variabel" and init == 0: 
+        #      var_size = self.get_type_size(type_code, ref)
+        #      self.btab[btab_idx]["vsze"] += var_size
 
         return new_idx
 
@@ -310,16 +331,27 @@ class SemanticAnalyzer:
         visit_var_type = self.visit(node.var_type)
         type_code = visit_var_type["typecode"]
         ref = visit_var_type.get("ptr", -1)
+
+        initial_offset = 5
+        # kalo var lokal, offset awal + param size
+        if self.btab[self.display[self.level]]["psze"] > 0:
+            initial_offset += self.btab[self.display[self.level]]["psze"]
         
+        block_offset = self.btab[self.display[self.level]]["vsze"]
+        final_addr = initial_offset + block_offset
+
         tab_idx = self.insert_tab(
             name=var_name, 
             obj="variabel", 
             type_code=type_code, 
             ref=ref, 
+            adr=final_addr,
             init=0 
         )
 
         self.decorate(node, type=type_code, idx=tab_idx, lev=self.level)
+        var_size = self.get_type_size(type_code, ref)
+        self.btab[self.display[self.level]]["vsze"] += var_size
 
     def visit_TypeDeclNode(self, node):
         visit_type_node = self.visit(node.type_node)
@@ -345,8 +377,8 @@ class SemanticAnalyzer:
         
         # 3. Proses Parameter
         # Berdasarkan ast_builder, params adalah list of tuples [(name, type_node), ...]
+        param_offset = 5
         total_psze = 0
-        
         for param in node.params: 
             p_name = ""
             p_type_node = None
@@ -361,6 +393,7 @@ class SemanticAnalyzer:
                 p_is_var = param.is_var  # <-- BACA FLAG DARI AST
             
             type_res = self.visit(p_type_node)
+            type_code, type_ref = type_res["typecode"], type_res.get("ptr", -1)
 
             # Tentukan nilai NRM
             # Jika is_var True (pass by ref), nrm = 0
@@ -371,18 +404,21 @@ class SemanticAnalyzer:
             self.insert_tab(
                 name=p_name, 
                 obj="variabel", 
-                type_code=type_res["typecode"], 
-                ref=type_res.get("ptr", -1), 
+                type_code=type_code, 
+                ref=type_ref, 
                 init=1,
                 nrm=nrm_val # <-- GUNAKAN NILAI INI
             )
-            total_psze += 1
+            param_size = 1 if not p_is_var else self.get_type_size(type_code, type_ref)
+            param_offset += param_size
+            total_psze += param_size
 
         # Update ukuran parameter di btab
         self.btab[blk_idx]["psze"] = total_psze
         
         # Update lastpar di btab
-        self.btab[blk_idx]["lpar"] = proc_idx + total_psze
+        self.btab[blk_idx]["lpar"] = proc_idx + len(node.params) - 1
+
 
         # 4. Proses Deklarasi Lokal & Body
         if node.declarations:
@@ -411,6 +447,7 @@ class SemanticAnalyzer:
         
         # 4. Params
         total_psze = 0
+        param_offset = 5
         for param in node.params:
             p_name = ""
             p_type_node = None
@@ -424,16 +461,21 @@ class SemanticAnalyzer:
                 p_is_var = param.is_var  # <-- BACA FLAG DARI AST
 
             type_res = self.visit(p_type_node)
+            type_code, type_ref = type_res["typecode"], type_res.get("ptr", -1)
 
             # Tentukan nilai NRM
             # Jika is_var True (pass by ref), nrm = 0
             # Jika is_var False (pass by value), nrm = 1
             nrm_val = 0 if p_is_var else 1
 
-            self.insert_tab(p_name, "variabel", type_res["typecode"], ref=type_res.get("ptr", -1), init=1, nrm=nrm_val)
-            total_psze += 1
+            self.insert_tab(p_name, "variabel", type_code, type_ref, init=1, nrm=nrm_val)
+            param_size = 1 if not p_is_var else self.get_type_size(type_code, type_ref)
+            param_offset += param_size
+            total_psze += param_size
             
         self.btab[blk_idx]["psze"] = total_psze
+
+        self.btab[blk_idx]["lpar"] = func_idx + len(node.params) - 1
         
         # 5. Result Variable (Variabel magis nama fungsi)
         # Agar bisa di-assign nilai return: function_name := ...
