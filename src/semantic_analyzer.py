@@ -490,11 +490,17 @@ class SemanticAnalyzer:
     def visit_RecordTypeNode(self, node):
         new_idx = self.enter_block() 
         
+        total_vsze = 0
+
         # fields is list of tuples (name, type_node) from ast_builder
         for name, type_node in node.info:
             visit_type_node = self.visit(type_node)
             self.insert_tab(name, "variabel", visit_type_node["typecode"], ref=visit_type_node.get("ptr", -1), init=1)
-            
+            total_vsze += 1  # Simplifikasi size = 1
+        
+        # Update vsze di btab
+        self.btab[new_idx]["vsze"] = total_vsze
+
         self.exit_block() 
         self.decorate(node, type=TYPE_RECORD, idx=new_idx, lev=None)
         return {"typecode": TYPE_RECORD, "ptr": new_idx}
