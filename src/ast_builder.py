@@ -54,6 +54,11 @@ class AST_Builder:
             
             if const_node.name == "<number-statement>":
                 value = self.visit_number_statement(const_node)
+            elif const_node.name.startswith("ARITHMETIC_OPERATOR(") and node.children[idx + 2].children[1].name == "<number-statement>":
+                op = self._extract_value(const_node.name)
+                value : NumberNode =  self.visit_number_statement(node.children[idx + 2].children[1])
+                if op == '-':
+                    value.add_negative()
             elif const_node.name.startswith("STRING_LITERAL"):
                 value = StringNode(self._extract_value(const_node.name))
             elif const_node.name.startswith("CHAR_LITERAL"):
@@ -214,8 +219,8 @@ class AST_Builder:
 
     def visit_if_statement(self, node: TreeNode):
         cond = self.visit_expression(node.children[1])
-        print("ini dia if statement visit then si " + str(node.children[3].children[0].name))
-        then_stmt = self.visit(node.children[3].children[0])
+        # print("ini dia if statement visit then si " + str(node.children[3].children[0].name))
+        then_stmt = self.visit(node.children[3])
         else_stmt = self.visit(node.children[5]) if len(node.children) > 4 else None
         return IfNode(cond, then_stmt, else_stmt)
 
