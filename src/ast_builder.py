@@ -219,8 +219,8 @@ class AST_Builder:
 
     def visit_if_statement(self, node: TreeNode):
         cond = self.visit_expression(node.children[1])
-        print("ini dia if statement visit then si " + str(node.children[3].children[0].name))
-        then_stmt = self.visit(node.children[3].children[0])
+        # print("ini dia if statement visit then si " + str(node.children[3].children[0].name))
+        then_stmt = self.visit(node.children[3])
         else_stmt = self.visit(node.children[5]) if len(node.children) > 4 else None
         return IfNode(cond, then_stmt, else_stmt)
 
