@@ -355,11 +355,15 @@ class SemanticAnalyzer:
 
     def visit_TypeDeclNode(self, node):
         visit_type_node = self.visit(node.type_node)
+        type_code = visit_type_node["typecode"]
+        ref = visit_type_node.get("ptr", -1)
+        type_size = self.get_type_size(type_code, ref)
         tab_idx = self.insert_tab(
             name=node.name,
             obj="tipe",
             type_code=visit_type_node["typecode"],
             ref=visit_type_node.get("ptr", -1),
+            adr=type_size,
             init=1 
         )
 
@@ -537,11 +541,17 @@ class SemanticAnalyzer:
         # fields is list of tuples (name, type_node) from ast_builder
         for name, type_node in node.info:
             visit_type_node = self.visit(type_node)
-            self.insert_tab(name, "variabel", visit_type_node["typecode"], ref=visit_type_node.get("ptr", -1), init=1)
-            total_vsze += 1  # Simplifikasi size = 1
+            type_code, ref = visit_type_node["typecode"], visit_type_node.get("ptr", -1)
+            current_adr = self.btab[new_idx]["vsze"]
+            self.insert_tab(name=name, 
+                            obj="variabel", 
+                            type_code=type_code, 
+                            ref=ref, 
+                            adr=current_adr, 
+                            init=1)
+            field_size = self.get_type_size(type_code, ref)
+            self.btab[new_idx]["vsze"] += field_size
         
-        # Update vsze di btab
-        self.btab[new_idx]["vsze"] = total_vsze
 
         self.exit_block() 
         self.decorate(node, type=TYPE_RECORD, idx=new_idx, lev=None)
