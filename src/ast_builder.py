@@ -84,7 +84,7 @@ class AST_Builder:
         names = []
         k = 0
         while k < len(ident_list_node.children):
-            if ident_list_node.children[k].name != "COMMA":
+            if not ident_list_node.children[k].name.startswith("COMMA"):
                 names.append(self._extract_value(ident_list_node.children[k].name))
             k += 1
         return names
@@ -316,7 +316,7 @@ class AST_Builder:
         
         if node.children[0].name.startswith("ARITHMETIC_OPERATOR"):
             op = self._extract_value(node.children[0].name)
-            expr = self.visit_expression(node.children[1])
+            expr = self.visit(node.children[1])
             left = UnaryOpNode(op, expr)
             idx = 2
         else:
