@@ -1,6 +1,10 @@
 import json
 import sys
 from parser import Parser
+from ast_print import *
+from ast_builder import *
+from semantic_analyzer import *
+import os
 
 def match_pattern(pattern, char):
     if pattern == "reg[A-Za-z0-9_]":
@@ -34,18 +38,37 @@ def check_keyword(stringValue, list_tok, dfa):
 dfa = None
 list_tokens = []
 
-with open("src/DFA-id.json", "r") as f:
-    dfa = json.load(f)
-
-try :
-    file = sys.argv[1]
-    with open(f"test/milestone-2/{file}.pas", "r") as f:
-        pass
+try:
+    script_dir = os.path.abspath(os.path.dirname(__file__))
+    json_path = os.path.join(script_dir, "DFA-id.json")
+    with open(json_path, "r") as f:
+        dfa = json.load(f)
 except FileNotFoundError:
-    print("File tidak ditemukan. Pastikan file berada di folder 'test' dan berekstensi .pas")
+    print(f"Error: Could not find required file 'DFA-id.json'.")
+    print(f"Make sure it is in the same directory as the script.")
+    exit()
+except Exception as e:
+    print(f"Error loading 'DFA-id.json': {e}")
     exit()
 
-with open(f"test/milestone-2/{file}.pas", "r") as f:
+try :
+    filePath = sys.argv[1]
+
+    if not filePath.endswith(".pas"):
+        print("Error: Hanya file dengan ekstensi .pas yang diizinkan.")
+        exit()
+
+    with open(f"{filePath}", "r") as f:
+        pass
+
+except FileNotFoundError:
+    print("File tidak ditemukan.")
+    exit()
+except IndexError:
+    print("Error: Mohon berikan nama file sebagai argumen.")
+    exit()
+
+with open(f"{filePath}", "r") as f:
     current_state = "q0"
     value = ""
     while True:
@@ -59,6 +82,9 @@ with open(f"test/milestone-2/{file}.pas", "r") as f:
             if current_state in dfa["final_states"].keys() and value:
                 token_type = dfa["final_states"][current_state]["type"]
                 list_tokens.append(f"{token_type}({value})")
+            #handle char atau string tidak di close
+            elif(current_state == 'q4' or current_state == 'q2'):
+                list_tokens.append(f"<Eror String not closed>({value})")
             break
 
 
@@ -106,4 +132,21 @@ for token in list_tokens:
 
 print("============ Parse Output ============")
 p = Parser(list_tokens)
-p.parse()
+parse_tree = p.parse()
+
+print("============ AST Output ============")
+ast_builder = AST_Builder(parse_tree)
+ast = ast_builder.build()
+# print_ast(ast, indent_size=2)
+
+print("============ Symbol Table Output ============")
+analyzer = SemanticAnalyzer()
+try:
+    analyzer.visit(ast)
+    analyzer.print_all_tables()
+    
+except SemanticError as e:
+    print(f"\n[SEMANTIC ERROR]: {e}")
+    pass
+
+print_ast(ast, indent_size=2)

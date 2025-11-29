@@ -67,6 +67,7 @@
     { "lexeme": "ulangi",      "token": "KEYWORD" },
     { "lexeme": "rekaman",      "token": "KEYWORD" },
     { "lexeme": "kasus",      "token": "KEYWORD" },
+    { "lexeme": "var",      "token": "KEYWORD" },
 
     { "lexeme": "bagi",   "token": "ARITHMETIC_OPERATOR" },
     { "lexeme": "mod",   "token": "ARITHMETIC_OPERATOR" },

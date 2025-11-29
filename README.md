@@ -24,19 +24,23 @@ Tugas ini mengeksplorasi implementasi dari compiler bahasa pemrograman Pascal-S.
 ```
 git clone https://github.com/jhotlann/LPH-Tubes-IF2224.git
 ```
-2. Arahkan ke direktori folder yang sesuai
+2. Arahkan ke direktori proyek
   ```
-cd path/to/folder/src/
+cd path/to/folder
 ```
 3. Jalankan dengan command
 ```
-python3 compiler.py program.ps
+python3 {path/to/src/compiler.py} {path/to/source_code.pas}
+```
+Contoh:
+```
+python3 src/compiler.py test/milestone-2/test1.pas
 ```
 
 # Pembagian Tugas
 | NIM        | Milestone 1 | Milestone 2 | Milestone 3 | Milestone 4 | Milestone 5 |
 |------------|-------------|-------------|-------------|-------------|-------------|
-| 13523023   | 25% |  |  |  |  |
-| 13523025   | 25% |  |  |  |  |
-| 13523051   | 25% |  |  |  |  |
-| 13523111   | 25% |  |  |  |  |
+| 13523023   | 25% | 25% |  |  |  |
+| 13523025   | 25% | 25% |  |  |  |
+| 13523051   | 25% | 25% |  |  |  |
+| 13523111   | 25% | 25% |  |  |  |

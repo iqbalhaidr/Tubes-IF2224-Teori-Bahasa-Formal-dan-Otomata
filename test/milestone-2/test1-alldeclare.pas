@@ -1,7 +1,7 @@
 program MiniTest;
 
 konstanta
-  k := 9;
+  k = 9;
 
 tipe
   Bil = integer;
