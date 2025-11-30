@@ -600,13 +600,19 @@ class SemanticAnalyzer:
                 if tab_entry["obj"] == "konstanta": 
                     raise SemanticError(f"Cannot assign to constant '{name}'")
                 
+                tab_entry["init"] = 1 #early mark init to make lhs no eror when visited
                 lhs_type = tab_entry["type"]
-                if not (lhs_type == TYPE_REAL and rhs_type == TYPE_INTEGER) and lhs_type != rhs_type:
-                    print(lhs_type)
-                    print(rhs_type)
+                lhs_value = self.visit(node.target)
+                # print(lhs_value)
+                # print("diatas ini lhs")
+                lhs_ptr = lhs_value['ptr']
+                if not (lhs_type == TYPE_REAL and rhs_type == TYPE_INTEGER) and lhs_type != rhs_type  :
+                    # print(lhs_type)
+                    # print(rhs_type)
+                    tab_entry["init"] = 0
                     raise SemanticError(f"Type mismatch assign '{name}': {lhs_type} := {rhs_type}")
-                
-                tab_entry["init"] = 1
+                elif (lhs_ptr != rhs_ptr):
+                    raise SemanticError(f"Type mismatch in assignment: {lhs_value['typecode']} := {rhs_type}, if it was a record it might be a different record")
                 self.decorate(target, type=lhs_type, idx=tab_entry["idx"], lev=tab_entry["lev"])
             
             else:
