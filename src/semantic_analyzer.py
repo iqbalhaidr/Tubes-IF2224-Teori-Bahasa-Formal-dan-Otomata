@@ -603,8 +603,6 @@ class SemanticAnalyzer:
 
             # Subcase B: Standard Variable
             elif tab_entry["obj"] == "variabel":
-                if tab_entry["obj"] == "konstanta": 
-                    raise SemanticError(f"Cannot assign to constant '{name}'")
                 
                 tab_entry["init"] = 1 #early mark init to make lhs no eror when visited
                 lhs_type = tab_entry["type"]
