@@ -23,116 +23,118 @@ class SemanticError(Exception):
 
 class SemanticAnalyzer:
     def __init__(self):
-        # 1. tab: Identifier Table
         self.tab = [
+            {"idx": 0, "id": "dan", "link": -1, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 1, "id": "larik", "link": 0, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
 
-            {"idx": 0, "id": "false", "link": -1, "obj": "konstanta", 
-            "type": TYPE_BOOLEAN, "ref": -1, "nrm": 0, "lev": 0, "adr": 0, "init": 1},
-            
-            {"idx": 1, "id": "true", "link": 0, "obj": "konstanta", 
-            "type": TYPE_BOOLEAN, "ref": -1, "nrm": 0, "lev": 0, "adr": 1, "init": 1},
+            {"idx": 2, "id": "mulai", "link": 1, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
 
-            {"idx": 2, "id": "real", "link": 1, "obj": "tipe", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": SIZE_REAL, "init": 1},
+            {"idx": 3, "id": "kasus", "link": 2, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
 
-            {"idx": 3, "id": "char", "link": 2, "obj": "tipe", 
-            "type": TYPE_CHAR, "ref": -1, "nrm": 0, "lev": 0, "adr": SIZE_CHAR, "init": 1},
+            {"idx": 4, "id": "konstanta", "link": 3, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
 
-            {"idx": 4, "id": "boolean", "link": 3, "obj": "tipe", 
-            "type": TYPE_BOOLEAN, "ref": -1, "nrm": 0, "lev": 0, "adr": SIZE_BOOLEAN, "init": 1},
+            {"idx": 5, "id": "div", "link": 4, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
 
-            {"idx": 5, "id": "integer", "link": 4, "obj": "tipe", 
-            "type": TYPE_INTEGER, "ref": -1, "nrm": 0, "lev": 0, "adr": SIZE_INTEGER, "init": 1},
+            {"idx": 6, "id": "turunke", "link": 5, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 7, "id": "lakukan", "link": 6, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 8, "id": "selainitu", "link": 7, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 9, "id": "selesai", "link": 8, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 10, "id": "untuk", "link": 9, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 11, "id": "fungsi", "link": 10, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 12, "id": "jika", "link": 11, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 13, "id": "mod", "link": 12, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 14, "id": "tidak", "link": 13, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 15, "id": "dari", "link": 14, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 16, "id": "atau", "link": 15, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 17, "id": "prosedur", "link": 16, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 18, "id": "program", "link": 17, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 19, "id": "rekaman", "link": 18, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 20, "id": "ulangi", "link": 19, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 21, "id": "string", "link": 20, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
+            
+            {"idx": 22, "id": "maka", "link": 21, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
 
-            {"idx": 6, "id": "abs", "link": 5, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 0, "init": 1},
+            {"idx": 23, "id": "ke", "link": 22, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
             
-            {"idx": 7, "id": "sqr", "link": 6, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 2, "init": 1},
+            {"idx": 24, "id": "tipe", "link": 23, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
             
-            {"idx": 8, "id": "odd", "link": 7, "obj": "fungsi", 
-            "type": TYPE_BOOLEAN, "ref": -1, "nrm": 0, "lev": 0, "adr": 4, "init": 1},
+            {"idx": 25, "id": "sampai", "link": 24, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
             
-            {"idx": 9, "id": "chr", "link": 8, "obj": "fungsi", 
-            "type": TYPE_CHAR, "ref": -1, "nrm": 0, "lev": 0, "adr": 5, "init": 1},
+            {"idx": 26, "id": "var", "link": 25, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
             
-            {"idx": 10, "id": "ord", "link": 9, "obj": "fungsi", 
-            "type": TYPE_INTEGER, "ref": -1, "nrm": 0, "lev": 0, "adr": 6, "init": 1},
+            {"idx": 27, "id": "selama", "link": 26, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1},
             
-            {"idx": 11, "id": "succ", "link": 10, "obj": "fungsi", 
-            "type": TYPE_CHAR, "ref": -1, "nrm": 0, "lev": 0, "adr": 7, "init": 1},
-            
-            {"idx": 12, "id": "pred", "link": 11, "obj": "fungsi", 
-            "type": TYPE_CHAR, "ref": -1, "nrm": 0, "lev": 0, "adr": 8, "init": 1},
-            
-            {"idx": 13, "id": "round", "link": 12, "obj": "fungsi", 
-            "type": TYPE_INTEGER, "ref": -1, "nrm": 0, "lev": 0, "adr": 9, "init": 1},
-            
-            {"idx": 14, "id": "trunc", "link": 13, "obj": "fungsi", 
-            "type": TYPE_INTEGER, "ref": -1, "nrm": 0, "lev": 0, "adr": 10, "init": 1},
-            
-            {"idx": 15, "id": "sin", "link": 14, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 11, "init": 1},
-            
-            {"idx": 16, "id": "cos", "link": 15, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 12, "init": 1},
-            
-            {"idx": 17, "id": "exp", "link": 16, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 13, "init": 1},
-            
-            {"idx": 18, "id": "ln", "link": 17, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 14, "init": 1},
-            
-            {"idx": 19, "id": "sqrt", "link": 18, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 15, "init": 1},
-            
-            {"idx": 20, "id": "arctan", "link": 19, "obj": "fungsi", 
-            "type": TYPE_REAL, "ref": -1, "nrm": 0, "lev": 0, "adr": 16, "init": 1},
-            
-            {"idx": 21, "id": "eof", "link": 20, "obj": "fungsi", 
-            "type": TYPE_BOOLEAN, "ref": -1, "nrm": 0, "lev": 0, "adr": 17, "init": 1},
-            
-            {"idx": 22, "id": "eoln", "link": 21, "obj": "fungsi", 
-            "type": TYPE_BOOLEAN, "ref": -1, "nrm": 0, "lev": 0, "adr": 18, "init": 1},
-
-            {"idx": 23, "id": "read", "link": 22, "obj": "prosedur", 
-            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": 0, "adr": 1, "init": 1},
-            
-            {"idx": 24, "id": "readln", "link": 23, "obj": "prosedur", 
-            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": 0, "adr": 2, "init": 1},
-            
-            {"idx": 25, "id": "write", "link": 24, "obj": "prosedur", 
-            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": 0, "adr": 3, "init": 1},
-            
-            {"idx": 26, "id": "writeln", "link": 25, "obj": "prosedur", 
-            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": 0, "adr": 4, "init": 1},
-            
-            # Opsional - jika Anda pakai versi Indonesia
-            {"idx": 27, "id": "larik", "link": 26, "obj": "tipe", 
-            "type": TYPE_ARRAY, "ref": -1, "nrm": 0, "lev": 0, "adr": 0, "init": 1},
-            
-            {"idx": 28, "id": "rekaman", "link": 27, "obj": "tipe", 
-            "type": TYPE_RECORD, "ref": -1, "nrm": 0, "lev": 0, "adr": 0, "init": 1},
+            {"idx": 28, "id": "packed", "link": 27, "obj": "keyword", 
+            "type": TYPE_UNDEFINED, "ref": -1, "nrm": 0, "lev": -1, "adr": 0, "init": 1}
         ]    
 
-        # 2. btab: Block Table (dimulai dengan block global)
+        # ini block 29 reserved word
         self.btab = [{
             "blocks": 0,
-            "last": 28,     # -1 artinya NULL
+            "last": 28, # -1 artinya NULL
             "lpar": 0,
-            "psze": 0,      # Parameter size
-            "vsze": 0       # Variable size (lokal)
+            "psze": 0,
+            "vsze": 0
         }]
-        
-        # 3. atab: Array Table
+
+        # btab perlu dimasukkin yang baru lagi ga (terpisah dari block keyword)???
+        self.btab.append({
+            "blocks": 1,
+            "last": -1, # -1 artinya NULL
+            "lpar": -1,
+            "psze": 0,
+            "vsze": 0
+        })
+
         self.atab = []   
 
-        # Display Stack untuk manajemen scope
         self.display = [0] * 20 
-        self.display[0] = 0
+        self.display[0] = 1
         self.level = 0
-
-    # ================= HELPER & TRAVERSAL & ISI ATRIBUT =================
     
     def visit(self, node):
         if node is None:
@@ -153,8 +155,6 @@ class SemanticAnalyzer:
             node.idx = idx
         if lev is not None:
             node.lev = lev
-
-    # ================= SYMBOL TABLE MANAGEMENT =================
 
     def lookup(self, name):
         """Mencari identifier dari scope terdalam (level saat ini) ke global"""
@@ -184,7 +184,6 @@ class SemanticAnalyzer:
         return None
 
     def enter_block(self):
-        """Membuat block baru, naik level"""
         new_idx = len(self.btab)
         self.btab.append({
             "blocks": new_idx,
@@ -198,7 +197,6 @@ class SemanticAnalyzer:
         return new_idx
 
     def exit_block(self):
-        """Turun level"""
         self.level -= 1
 
     def get_type_size(self, type_code, type_ref=-1):
@@ -211,6 +209,8 @@ class SemanticAnalyzer:
             return SIZE_BOOLEAN
         elif type_code == TYPE_CHAR:
             return SIZE_CHAR
+        elif type_code == TYPE_STRING:
+            return SIZE_CHAR * 256 # INI BELOM JADI WOY, HARUSNYA GA GINI
         elif type_code == TYPE_ARRAY:
             if type_ref != -1 and type_ref < len(self.atab):
                 return self.atab[type_ref]["size"]
@@ -221,7 +221,6 @@ class SemanticAnalyzer:
             raise SemanticError(f"Referensi record tidak valid (ref: {type_ref}) saat menghitung ukuran.")
         return 0
 
-
     def insert_tab(self, name, obj, type_code, ref=-1, nrm=1, adr=0, init=0):
         btab_idx = self.display[self.level]
         link_head = self.btab[btab_idx]["last"]
@@ -229,9 +228,6 @@ class SemanticAnalyzer:
         # Cek duplikasi di scope yang sama
         curr = link_head
         while curr != -1:
-            # Note: Dalam Pascal standard, variabel lokal boleh memiliki nama sama dengan global
-            # Tapi tidak boleh sama dengan variabel lain di level (scope) yang sama.
-            # Karena loop lookup kita hanya cek link list block ini, ini sudah benar.
             if self.tab[curr]["id"] == name:
                 raise SemanticError(f"Duplicate identifier '{name}' in current scope")
             curr = self.tab[curr]["link"]
@@ -245,28 +241,21 @@ class SemanticAnalyzer:
             "obj": obj,        
             "type": type_code,
             "ref": ref,
-            "nrm": nrm,
+            "nrm": nrm, # 1 normal, 0 by-reference
             "lev": self.level,
             "adr": adr,
             "init": init
         }
         
         self.tab.append(new_entry)
-
-        # Update pointer last di btab
         self.btab[btab_idx]["last"] = new_idx
-        
-        # Update Variable Size (vsze) jika ini variabel (bukan param, bukan type)
-        # if obj == "variabel" and init == 0: 
-        #      var_size = self.get_type_size(type_code, ref)
-        #      self.btab[btab_idx]["vsze"] += var_size
 
         return new_idx
 
     def insert_atab(self, xtyp, etyp, low, high, eref=-1):
         new_idx = len(self.atab)
 
-        elsz = 1 # Simplifikasi size element
+        elsz = self.get_type_size(type_code=etyp, type_ref=eref)
         size = (high - low + 1) * elsz
         
         self.atab.append({
@@ -281,12 +270,27 @@ class SemanticAnalyzer:
         })
         return new_idx
 
-    # ================= PROGRAM & BLOCKS =================
+    def get_parameter_indexes(self, proc_or_func_tab_idx):
+        if proc_or_func_tab_idx < 0 or proc_or_func_tab_idx >= len(self.tab):
+            raise SemanticError(f"Invalid tab idx for procedure/function in get_parameter_count()")
+        
+        entry = self.tab[proc_or_func_tab_idx]
+
+        if entry["obj"] not in ["prosedur", "fungsi"]:
+            raise SemanticError(f"error tab idx is not procedure/function in get_parameter_count()")
+        
+        lpar = self.btab[entry["ref"]]["lpar"]
+        indexes = []
+
+        while lpar != -1:
+            tab_entry = self.tab[lpar]
+            indexes.append(lpar)
+            lpar = tab_entry["link"]
+        
+        indexes.reverse()
+        return indexes
 
     def visit_ProgramNode(self, node):
-        print(f"--- Analyzing Program: {node.name} ---")
-        # Masukkan nama program ke scope global (atau biarkan di luar btab[0])
-        # Di contoh spek, program masuk tab.
         tab_idx = self.insert_tab(node.name, "program", TYPE_UNDEFINED, init=1)
         
         if node.declarations:
@@ -303,8 +307,6 @@ class SemanticAnalyzer:
         btab_idx = self.display[self.level]
         self.decorate(node, type=None, idx=btab_idx, lev=self.level)
 
-    # ================= DECLARATIONS =================
-
     def visit_ConstDeclNode(self, node):
         visit_value = self.visit(node.value)
         
@@ -318,7 +320,7 @@ class SemanticAnalyzer:
         if const_type == TYPE_STRING:
             final_adr = len(const_value.strip("'"))  # Simplifikasi: alamat = panjang string
         elif const_type == TYPE_CHAR:
-            print(f"const_value: {const_value} ({type(const_value)})")
+            # print(f"const_value: {const_value} ({type(const_value)})")
             final_adr = ord(const_value.strip("'"))   # Alamat = kode ASCII (cdc tuwir ga ada lowercase jadi tentatif)
         else:
             final_adr = round(const_value) & 0xFFFFFFFF # kalau desimal buletin jd integer, kalau negatif jadi positif pake two's complement
@@ -334,10 +336,6 @@ class SemanticAnalyzer:
         self.decorate(node, type=visit_value["typecode"], idx=tab_idx, lev=self.level)
 
     def visit_VarDeclNode(self, node):
-        # node.names bisa list (jika a, b: integer) atau single string tergantung ast_builder
-        # Berdasarkan ast_builder visit_var_declaration -> mengembalikan list of VarDeclNode
-        # Dimana setiap VarDeclNode.names adalah string tunggal (akibat loop di ast_builder)
-        
         var_name = node.names
         
         visit_var_type = self.visit(node.var_type)
@@ -383,134 +381,104 @@ class SemanticAnalyzer:
 
     def visit_ProcedureDeclNode(self, node):
         proc_name = node.name
-        
-        # 1. Insert nama prosedur ke scope saat ini
+
         proc_idx = self.insert_tab(proc_name, "prosedur", TYPE_UNDEFINED, init=1)
-        
-        # 2. Masuk Scope Baru (Prosedur)
+    
         blk_idx = self.enter_block()
         self.tab[proc_idx]["ref"] = blk_idx
         
-        # 3. Proses Parameter
-        # Berdasarkan ast_builder, params adalah list of tuples [(name, type_node), ...]
         param_offset = 5
         total_psze = 0
+        last_param_idx = -1  # Track the last parameter index
         for param in node.params: 
             p_name = ""
             p_type_node = None
-            p_is_var = False # Default by value
+            p_is_var = False 
             
-            # Handling format tuple dari ast_builder
             if isinstance(param, tuple): # Harusnya udah ga mungkin masuk sini
                 p_name, p_type_node = param
             elif isinstance(param, VarDeclNode): # Jaga-jaga jika format berubah
                 p_name = param.names
                 p_type_node = param.var_type
-                p_is_var = param.is_var  # <-- BACA FLAG DARI AST
+                p_is_var = param.is_var
             
             type_res = self.visit(p_type_node)
             type_code, type_ref = type_res["typecode"], type_res.get("ptr", -1)
-
-            # Tentukan nilai NRM
-            # Jika is_var True (pass by ref), nrm = 0
-            # Jika is_var False (pass by value), nrm = 1
             nrm_val = 0 if p_is_var else 1
-            
-            # Masukkan parameter sebagai variabel lokal yang sudah di-init
-            self.insert_tab(
+
+            last_param_idx = self.insert_tab(
                 name=p_name, 
                 obj="variabel", 
                 type_code=type_code, 
                 ref=type_ref, 
                 init=1,
-                nrm=nrm_val # <-- GUNAKAN NILAI INI
+                nrm=nrm_val,
+                adr=param_offset # adr dari parameter
             )
-            param_size = 1 if not p_is_var else self.get_type_size(type_code, type_ref)
+            param_size = 1 if p_is_var else self.get_type_size(type_code, type_ref)
             param_offset += param_size
             total_psze += param_size
 
-        # Update ukuran parameter di btab
         self.btab[blk_idx]["psze"] = total_psze
-        
-        # Update lastpar di btab
-        self.btab[blk_idx]["lpar"] = proc_idx + len(node.params) - 1
+        self.btab[blk_idx]["lpar"] = last_param_idx
 
-
-        # 4. Proses Deklarasi Lokal & Body
         if node.declarations:
             self.visit(node.declarations)
             
         self.visit(node.body)
-        
-        # 5. Keluar Scope
         self.exit_block()
-
         self.decorate(node, type=None, idx=proc_idx, lev=self.level)
 
     def visit_FunctionDeclNode(self, node):
         func_name = node.name
-        
-        # 1. Cek Tipe Return
+
         ret_type_res = self.visit(node.return_type)
         ret_code = ret_type_res["typecode"]
-        
-        # 2. Insert Fungsi
+
         func_idx = self.insert_tab(func_name, "fungsi", ret_code, init=1)
-        
-        # 3. Masuk Scope
+
         blk_idx = self.enter_block()
         self.tab[func_idx]["ref"] = blk_idx
-        
-        # 4. Params
+
         total_psze = 0
         param_offset = 5
+        last_param_idx = -1  # Track the last parameter index
         for param in node.params:
             p_name = ""
             p_type_node = None
-            p_is_var = False # Default by value
+            p_is_var = False
             
             if isinstance(param, tuple): # Harusnya udah ga mungkin masuk sini
                 p_name, p_type_node = param
             elif isinstance(param, VarDeclNode):
                 p_name = param.names
                 p_type_node = param.var_type
-                p_is_var = param.is_var  # <-- BACA FLAG DARI AST
+                p_is_var = param.is_var
 
             type_res = self.visit(p_type_node)
             type_code, type_ref = type_res["typecode"], type_res.get("ptr", -1)
-
-            # Tentukan nilai NRM
-            # Jika is_var True (pass by ref), nrm = 0
-            # Jika is_var False (pass by value), nrm = 1
             nrm_val = 0 if p_is_var else 1
 
-            self.insert_tab(p_name, "variabel", type_code, type_ref, init=1, nrm=nrm_val)
-            param_size = 1 if not p_is_var else self.get_type_size(type_code, type_ref)
+            last_param_idx = self.insert_tab(p_name, "variabel", type_code, type_ref, init=1, nrm=nrm_val, adr=param_offset)
+            param_size = 1 if p_is_var else self.get_type_size(type_code, type_ref)
             param_offset += param_size
             total_psze += param_size
             
         self.btab[blk_idx]["psze"] = total_psze
-
-        self.btab[blk_idx]["lpar"] = func_idx + len(node.params) - 1
-        
-        # 5. Result Variable (Variabel magis nama fungsi)
-        # Agar bisa di-assign nilai return: function_name := ...
-        self.insert_tab(func_name, "variabel", ret_code, init=0)
+        self.btab[blk_idx]["lpar"] = last_param_idx
         
         if node.declarations:
             self.visit(node.declarations)
             
         self.visit(node.body)
         self.exit_block()
-
         self.decorate(node, type=ret_code, idx=func_idx, lev=self.level)
-
-    # ================= TYPES =================
 
     def visit_BuiltinTypeNode(self, node):
         mapping = {
             "integer": TYPE_INTEGER, "real": TYPE_REAL,
-            "boolean": TYPE_BOOLEAN, "char": TYPE_CHAR
+            "boolean": TYPE_BOOLEAN, "char": TYPE_CHAR,
+            "string" : TYPE_STRING
         }
 
         typecode = mapping.get(node.info, TYPE_UNDEFINED)
@@ -538,6 +506,9 @@ class SemanticAnalyzer:
             
         low = visit_low["value"]
         high = visit_high["value"]
+
+        if low > high:
+            raise SemanticError("Invalid array bound value (left must be smaller than right)")
         
         visit_element_type = self.visit(node.info["element_type"])
         atab_idx = self.insert_atab(TYPE_INTEGER, visit_element_type["typecode"], low, high, visit_element_type.get("ptr", -1))
@@ -548,8 +519,6 @@ class SemanticAnalyzer:
     def visit_RecordTypeNode(self, node):
         new_idx = self.enter_block() 
         
-
-        # fields is list of tuples (name, type_node) from ast_builder
         for name, type_node in node.info:
             visit_type_node = self.visit(type_node)
             type_code, ref = visit_type_node["typecode"], visit_type_node.get("ptr", -1)
@@ -562,52 +531,86 @@ class SemanticAnalyzer:
                             init=1)
             field_size = self.get_type_size(type_code, ref)
             self.btab[new_idx]["vsze"] += field_size
-        
 
         self.exit_block() 
         self.decorate(node, type=TYPE_RECORD, idx=new_idx, lev=None)
         return {"typecode": TYPE_RECORD, "ptr": new_idx}
 
-    # ================= STATEMENTS =================
-
     def visit_AssignNode(self, node):
         visit_value = self.visit(node.value)
+        rhs_ptr = None
+        try:
+            rhs_ptr = visit_value['ptr']
+        except:
+            rhs_ptr = -1
+
         rhs_type = visit_value["typecode"]
         target = node.target
         
-        # Helper untuk mencari variabel akar (jika akses array/record)
-        root_var = target
-        while isinstance(root_var, (ArrayAccessNode, RecordAccessNode)):
-            root_var = root_var.var
-
-        if isinstance(root_var, VarNode):
-            name = root_var.name
-            tab_entry = self.lookup(name)
-            if not tab_entry: raise SemanticError(f"Undeclared var '{name}'")
-            if tab_entry["obj"] == "konstanta": raise SemanticError(f"Cannot assign to constant '{name}'")
+        # Case 1: Complex Access (Array[...] or Record.Field)
+        if isinstance(target, (ArrayAccessNode, RecordAccessNode)):
+            # mark init dulu supaya ga error saat LHS traversal
+            root_var = target
+            while isinstance(root_var, (ArrayAccessNode, RecordAccessNode)):
+                root_var = root_var.var
             
-            # Jika target adalah variabel langsung (bukan elemen array/record)
-            if isinstance(target, VarNode):
+            if isinstance(root_var, VarNode):
+                tab_entry = self.lookup(root_var.name)
+                if tab_entry:
+                    tab_entry["init"] = 1 # Mark initialized because we are writing to it
+
+            lhs = self.visit(target) 
+
+            if lhs["typecode"] != rhs_type or lhs['ptr'] != rhs_ptr:
+                 # Allow assigning Int to Real
+                 if not (lhs["typecode"] == TYPE_REAL and rhs_type == TYPE_INTEGER):
+                    raise SemanticError(f"Type mismatch in assignment: {lhs['typecode']} := {rhs_type}, if it was a record it might be a different record")
+            
+            # Mark the root variable as initialized
+            root_var = target
+            while isinstance(root_var, (ArrayAccessNode, RecordAccessNode)):
+                root_var = root_var.var
+            
+            if isinstance(root_var, VarNode):
+                tab_entry = self.lookup(root_var.name)
+                if tab_entry:
+                    tab_entry["init"] = 1
+                    
+        # Case 2: Simple Variable Assignment (x := 5)
+        elif isinstance(target, VarNode):
+            name = target.name
+            tab_entry = self.lookup(name)
+            if not tab_entry: raise SemanticError(f"Undeclared identifier '{name}'")
+            
+            # Subcase A: Function Return Value Assignment
+            if tab_entry["obj"] == "fungsi":
+                # Check scope (must be inside the function)
+                current_scope_idx = self.display[self.level]
+                if tab_entry["ref"] != current_scope_idx:
+                     raise SemanticError(f"Cannot assign to function '{name}' outside its block")
+                
                 lhs_type = tab_entry["type"]
                 if not (lhs_type == TYPE_REAL and rhs_type == TYPE_INTEGER) and lhs_type != rhs_type:
+                    raise SemanticError(f"Return type mismatch for '{name}'")
+                
+                self.decorate(target, type=lhs_type, idx=tab_entry["idx"], lev=tab_entry["lev"])
+
+            # Subcase B: Standard Variable
+            elif tab_entry["obj"] == "variabel":
+                if tab_entry["obj"] == "konstanta": 
+                    raise SemanticError(f"Cannot assign to constant '{name}'")
+                
+                lhs_type = tab_entry["type"]
+                if not (lhs_type == TYPE_REAL and rhs_type == TYPE_INTEGER) and lhs_type != rhs_type:
+                    print(lhs_type)
+                    print(rhs_type)
                     raise SemanticError(f"Type mismatch assign '{name}': {lhs_type} := {rhs_type}")
+                
+                tab_entry["init"] = 1
+                self.decorate(target, type=lhs_type, idx=tab_entry["idx"], lev=tab_entry["lev"])
             
-            # [PERBAIKAN DISINI]
-            # Karena kita tidak memanggil visit_VarNode (takut error uninitialized),
-            # Kita harus decorate manual di sini supaya AST-nya cantik.
-            self.decorate(target, type=tab_entry["type"], idx=tab_entry["idx"], lev=tab_entry["lev"])
-
-            # Jika target kompleks, validasi tipe dilakukan di visit_Access
-            # Tapi kita tandai variabel akar sebagai sudah diinisialisasi
-            tab_entry["init"] = 1
-
-        elif isinstance(target, (ArrayAccessNode, RecordAccessNode)):
-            # Validasi tipe elemen kiri
-            lhs = self.visit(target)
-            if lhs["typecode"] != rhs_type:
-                 # Allow int to real
-                 if not (lhs["typecode"] == TYPE_REAL and rhs_type == TYPE_INTEGER):
-                    raise SemanticError("Type mismatch in complex assignment")
+            else:
+                raise SemanticError(f"Cannot assign to {tab_entry['obj']} '{name}'")
         
         self.decorate(node, type=TYPE_UNDEFINED, idx=None, lev=None)
 
@@ -630,7 +633,7 @@ class SemanticAnalyzer:
     def visit_ForNode(self, node):
         entry = self.lookup(node.var)
         if not entry: raise SemanticError(f"Undeclared loop variable '{node.var}'")
-        if entry["type"] != TYPE_INTEGER: raise SemanticError("Loop variable must be integer")
+        if entry["type"] != TYPE_INTEGER: raise SemanticError("Loop variable must be integer") # Only support integer (char and bool not currently supported)
         
         start = self.visit(node.start)
         end = self.visit(node.end)
@@ -657,12 +660,21 @@ class SemanticAnalyzer:
         
         if sel_type not in [TYPE_INTEGER, TYPE_CHAR, TYPE_BOOLEAN]:
             raise SemanticError("CASE selector must be ordinal type (int, char, bool)")
-            
+        
+        used_labels = set()
+
         for branch in node.branches:
             for label in branch.labels:
                 lbl_res = self.visit(label)
                 if lbl_res["typecode"] != sel_type:
                     raise SemanticError("CASE label type mismatch with selector")
+
+                if "value" in lbl_res:
+                    lbl_value = lbl_res["value"]
+                    if lbl_value in used_labels:
+                        raise SemanticError("Duplicate CASE label value")
+                    used_labels.add(lbl_value)
+                    
             self.visit(branch.stmt)
 
         self.decorate(node, type=None, idx=None, lev=self.level)
@@ -671,22 +683,55 @@ class SemanticAnalyzer:
         entry = self.lookup(node.name)
         # Built-in check
         if not entry: 
-            if node.name.lower() in ['write', 'writeln', 'read', 'readln']: 
-                # Visit args untuk memastikan variabel di dalam argumen valid
-                if hasattr(node, 'args') and isinstance(node.args, list):
-                    for arg in node.args: self.visit(arg)
-                return
             raise SemanticError(f"Undeclared procedure '{node.name}'")
             
         if entry["obj"] != "prosedur": raise SemanticError(f"'{node.name}' is not a procedure")
         
+        params_indexes = self.get_parameter_indexes(entry["idx"])
+
+        if len(node.args) != len(params_indexes):
+            raise SemanticError("Argument count mismatch")
+
         # Visit args
         if hasattr(node, 'args') and isinstance(node.args, list):
-            for arg in node.args: self.visit(arg)
+            ctr = 0
+            for arg in node.args: 
+                param_entry = self.tab[params_indexes[ctr]]
+
+                # Check VAR parameter (Reference)
+                if param_entry["nrm"] == 0:
+                    if not isinstance(arg, (VarNode, ArrayAccessNode, RecordAccessNode)): # Must pass a variable, not a literal value
+                        raise SemanticError("VAR parameter must be a variable")
+                    
+                    if isinstance(arg, VarNode):
+                        arg_entry = self.lookup(arg.name)
+                        if not arg_entry:
+                            raise SemanticError(f"Undeclared identifier '{arg.name}'")
+                        
+                        visit_arg = {
+                            "typecode": arg_entry["type"],
+                            "ptr": arg_entry["ref"]
+                        }
+                        
+                        # Mark as initialized after the call (VAR param can initialize it)
+                        arg_entry["init"] = 1
+                        self.decorate(arg, type=arg_entry["type"], idx=arg_entry["idx"], lev=arg_entry["lev"])
+                    else:
+                        # For complex access (array/record), visit normally
+                        visit_arg = self.visit(arg)
+                else:
+                    # Normal value parameter - must be initialized
+                    visit_arg = self.visit(arg)
+
+                # Check Type Mismatch
+                if visit_arg["typecode"] != param_entry["type"]:
+                    # Handle Int->Real implicit conversion if allowed
+                    if not (param_entry["type"] == TYPE_REAL and visit_arg["typecode"] == TYPE_INTEGER):
+                        raise SemanticError(f"Type mismatch for param {param_entry['id']}")
+                    
+                ctr += 1
 
         self.decorate(node, type=None, idx=entry["idx"], lev=entry["lev"])
-
-    # ================= EXPRESSIONS =================
 
     def visit_BinOpNode(self, node):
         left = self.visit(node.left)
@@ -699,24 +744,21 @@ class SemanticAnalyzer:
         has_val = (l_val is not None) and (r_val is not None)
         res = {"typecode": TYPE_UNDEFINED}
 
-        # --- ARITHMETIC OPERATORS (Support Bahasa Indonesia) ---
         arith_ops = ['+', '-', '*', 'div', 'mod', '/', 'bagi', 'kali', 'kurang', 'tambah']
         
         if op in arith_ops:
-            # Tentukan apakah ini operasi bilangan real
             # 'bagi' atau '/' selalu menghasilkan REAL
             # Jika salah satu operand REAL, hasil REAL (kecuali div/mod)
-            is_real_result = (op in ['/', 'bagi']) or (l_type == TYPE_REAL or r_type == TYPE_REAL)
+            is_real_result = (op in ['/']) or (l_type == TYPE_REAL or r_type == TYPE_REAL)
             
-            if is_real_result and op not in ['div', 'mod']:
+            if is_real_result:
                 res["typecode"] = TYPE_REAL
                 if has_val:
                     if op in ['+', 'tambah']: res["value"] = l_val + r_val
                     elif op in ['-', 'kurang']: res["value"] = l_val - r_val
                     elif op in ['*', 'kali']: res["value"] = l_val * r_val
-                    elif op in ['/', 'bagi']: res["value"] = l_val / r_val if r_val != 0 else 0
+                    elif op in ['/']: res["value"] = l_val / r_val if r_val != 0 else 0
             
-            # Operasi Integer Murni
             elif l_type == TYPE_INTEGER and r_type == TYPE_INTEGER:
                 res["typecode"] = TYPE_INTEGER
                 if has_val:
@@ -728,7 +770,6 @@ class SemanticAnalyzer:
             else:
                 raise SemanticError(f"Invalid operand types for '{op}'")
 
-        # --- RELATIONAL OPERATORS ---
         elif op in ['=', '<>', '<', '>', '<=', '>=']:
             res["typecode"] = TYPE_BOOLEAN 
             # Compatible jika tipe sama atau keduanya numerik (int/real)
@@ -737,7 +778,6 @@ class SemanticAnalyzer:
             else:
                 raise SemanticError(f"Cannot compare {l_type} with {r_type}")
 
-        # --- LOGICAL OPERATORS (Support Bahasa Indonesia) ---
         elif op in ['and', 'or', 'dan', 'atau']:
             if l_type == TYPE_BOOLEAN and r_type == TYPE_BOOLEAN:
                 res["typecode"] = TYPE_BOOLEAN
@@ -779,19 +819,62 @@ class SemanticAnalyzer:
             raise SemanticError(f"Variable '{node.name}' not initialized yet")
             
         self.decorate(node, type=tab_entry["type"], idx=tab_entry["idx"], lev=None)
-        return {
+
+        result =  {
             "typecode": tab_entry["type"],
-            "ptr": tab_entry["ref"],
-            "value": tab_entry["adr"] # Return value jika ini konstanta
+            "ptr": tab_entry["ref"]
         }
+
+        # Only include "value" for constants (compile-time known values)
+        if tab_entry["obj"] == "konstanta":
+            result["value"] = tab_entry["adr"]
+        
+        return result
 
     def visit_FunctionCallNode(self, node):
         entry = self.lookup(node.name)
         if not entry: raise SemanticError(f"Undeclared function '{node.name}'")
         if entry["obj"] != "fungsi": raise SemanticError(f"'{node.name}' is not a function")
         
+        params_indexes = self.get_parameter_indexes(entry["idx"])
+        if len(node.args) != len(params_indexes):
+            raise SemanticError("Argument count mismatch")
+
+        # Visit args
         if hasattr(node, 'args') and isinstance(node.args, list):
-            for arg in node.args: self.visit(arg)
+            ctr = 0
+            for arg in node.args: 
+                param_entry = self.tab[params_indexes[ctr]]
+
+                # For VAR parameters, skip initialization check
+                if param_entry["nrm"] == 0:  # VAR parameter
+                    if not isinstance(arg, (VarNode, ArrayAccessNode, RecordAccessNode)):
+                        raise SemanticError(f"VAR parameter '{param_entry['id']}' requires a variable")
+                    
+                    if isinstance(arg, VarNode):
+                        arg_entry = self.lookup(arg.name)
+                        if not arg_entry:
+                            raise SemanticError(f"Undeclared identifier '{arg.name}'")
+                        
+                        visit_arg = {
+                            "typecode": arg_entry["type"],
+                            "ptr": arg_entry["ref"]
+                        }
+                        
+                        arg_entry["init"] = 1  # Mark as initialized
+                        self.decorate(arg, type=arg_entry["type"], idx=arg_entry["idx"], lev=arg_entry["lev"])
+                    else:
+                        visit_arg = self.visit(arg)
+                else:
+                    visit_arg = self.visit(arg)
+
+                # Check Type Mismatch
+                if visit_arg["typecode"] != param_entry["type"]:
+                    # Handle Int->Real implicit conversion if allowed
+                    if not (param_entry["type"] == TYPE_REAL and visit_arg["typecode"] == TYPE_INTEGER):
+                        raise SemanticError(f"Type mismatch for param {param_entry['id']}")
+                    
+                ctr += 1
         
         self.decorate(node, type=entry["type"], idx=entry["idx"], lev=entry["lev"])
         return {"typecode": entry["type"]} 
@@ -810,6 +893,22 @@ class SemanticAnalyzer:
         atab_entry = self.atab[atab_idx]
         if visit_index["typecode"] != atab_entry["xtyp"]:
             raise SemanticError("Array index type mismatch")
+        
+        if "value" in visit_index and visit_index["value"] is not None:
+            idx_val = visit_index["value"]
+
+            # If the index type is CHAR, convert to ASCII int for comparison
+            # because atab usually stores low/high as integers.
+            # Disclaimer: seharusnya tidak akan masuk sini, karena dibatasi index hanya bisa TYPE_INTEGER
+            if visit_index["typecode"] == TYPE_CHAR:
+                if isinstance(idx_val, str):
+                    idx_val = ord(idx_val[0])
+
+            if idx_val < atab_entry["low"] or idx_val > atab_entry["high"]:
+                raise SemanticError(
+                    f"Array index out of bounds. Got {idx_val}, "
+                    f"expected range {atab_entry['low']}..{atab_entry['high']}"
+                )
             
         self.decorate(node, type=None, idx=atab_idx, lev=None)
         return {"typecode": atab_entry["etyp"], "ptr": atab_entry["eref"]}
@@ -833,7 +932,6 @@ class SemanticAnalyzer:
         self.decorate(node, type=None, idx=btab_idx, lev=lookup_field["idx"])
         return {"typecode": lookup_field["type"], "ptr": lookup_field["ref"]}
 
-    # --- LITERALS ---
     def visit_NumberNode(self, node):
         tc = TYPE_REAL if isinstance(node.value, float) else TYPE_INTEGER
         self.decorate(node, type=tc, idx=None, lev=None)
@@ -851,43 +949,50 @@ class SemanticAnalyzer:
         self.decorate(node, type=TYPE_BOOLEAN, idx=None, lev=None)
         return {"typecode": TYPE_BOOLEAN, "value": node.value}
     
-
 # ================= PRINT TABLES FUNCTION =================
     def print_all_tables(self):
-        # Mapping Tipe Data untuk display yang lebih user-friendly
         TYPE_MAP = {
-            0: 'UNDEF', 1: 'INT', 2: 'REAL', 3: 'BOOL', 
-            4: 'CHAR', 5: 'ARRAY', 6: 'RECORD', 7: 'STR'
+            0: '[0] undef', 1: '[1] int', 2: '[2] real', 3: '[3] boolean', 
+            4: '[4] char', 5: '[5] array', 6: '[6] record', 7: '[7] string'
         }
 
-        print("\n" + "="*90)
-        print(f"{'TAB (Identifier Table)':^90}")
-        print("="*90)
-        # Header sesuai spesifikasi Hal 12
-        # print(f"{'IDX':<5} {'ID':<15} {'OBJ':<10} {'TYPE':<8} {'REF':<5} {'NRM':<5} {'LEV':<5} {'ADR':<10} {'INIT':<5} {'LINK':<5}")
-        print(f"{'idx':<5} {'identifiers':<15} {'link':<6} {'obj':<12} {'typ':<8} {'ref':<6} {'nrm':<5} {'lev':<5} {'adr':<10} {'init':<5}")
-        print("-" * 90)
+        OBJ_MAP = {
+            'konstanta': '[0] konstanta',
+            'variabel':  '[1] variabel',
+            'tipe':      '[2] tipe',
+            'prosedur':  '[3] prosedur',
+            'fungsi':    '[4] fungsi',
+            'program':   '[5] program',
+            'keyword':   '[6] keyword'
+        }
+
+        w_id  = len('identifiers')
+        for item in self.tab:
+            w_id  = max(w_id, len(item['id']))
+        w_id  += 2
+        t_len = 85 + w_id
+
+        print("\n" + "="*t_len)
+        print(f"{'TAB (Identifier Table)':^{t_len}}")
+        print("="*t_len)
+        print(f"{'idx':<5} {'identifiers':<{w_id}} {'link':<6} {'obj':<15} {'type':<14} {'ref':<6} {'nrm':<5} {'lev':<5} {'adr':<10} {'init':<5}")
+        print("-" * t_len)
         
         for item in self.tab:
             t_str = TYPE_MAP.get(item['type'], str(item['type']))
-            # Formatting alignment
-            # print(f"{item['idx']:<5} {item['id']:<15} {item['obj']:<10} {t_str:<8} "
-            #     f"{item['ref']:<5} {item['nrm']:<5} {item['lev']:<5} {str(item['adr']):<10} "
-            #     f"{item['init']:<5} {item['link']:<5}")
-            print(f"{item['idx']:<5} {item['id']:<15} {item['link']:<6} {item['obj']:<12} "
-                  f"{t_str:<8} {item['ref']:<6} {item['nrm']:<5} {item['lev']:<5} "
+            o_str = OBJ_MAP.get(item['obj'], str(item['obj']))
+            print(f"{item['idx']:<5} {item['id']:<{w_id}} {item['link']:<6} {o_str:<15} "
+                  f"{t_str:<14} {item['ref']:<6} {item['nrm']:<5} {item['lev']:<5} "
                   f"{str(item['adr']):<10} {item['init']:<5}")
 
         print("\n" + "="*60)
         print(f"{'BTAB (Block Table)':^60}")
         print("="*60)
-        # Header sesuai spesifikasi Hal 13
-        print(f"{'blocks':<5} {'last':<8} {'lpar':<8} {'psze':<8} {'vsze':<8}")
+        print(f"{'blocks':<8} {'last':<8} {'lpar':<8} {'psze':<8} {'vsze':<8}")
         print("-" * 60)
         
         for i, item in enumerate(self.btab):
-            # Menggunakan index list sebagai IDX block
-            print(f"{i:<5} {item['last']:<8} {item['lpar']:<8} {item['psze']:<8} {item['vsze']:<8}")
+            print(f"{i:<8} {item['last']:<8} {item['lpar']:<8} {item['psze']:<8} {item['vsze']:<8}")
 
         print("\n" + "="*80)
         print(f"{'ATAB (Array Table)':^80}")
@@ -896,15 +1001,40 @@ class SemanticAnalyzer:
         if not self.atab:
             print(" (Empty) ")
         else:
-            # Header sesuai spesifikasi Hal 13
-            print(f"{'arrays':<5} {'xtyp':<8} {'etyp':<8} {'eref':<6} {'low':<6} {'high':<6} {'elsz':<6} {'size':<6}")
+            print(f"{'arrays':<8} {'xtyp':<8} {'etyp':<8} {'eref':<6} {'low':<6} {'high':<6} {'elsz':<6} {'size':<6}")
             print("-" * 80)
             
             for item in self.atab:
                 xtyp_str = TYPE_MAP.get(item['xtyp'], str(item['xtyp']))
                 etyp_str = TYPE_MAP.get(item['etyp'], str(item['etyp']))
                 
-                print(f"{item['arrays']:<5} {xtyp_str:<8} {etyp_str:<8} {item['eref']:<6} "
+                print(f"{item['arrays']:<8} {xtyp_str:<8} {etyp_str:<8} {item['eref']:<6} "
                     f"{item['low']:<6} {item['high']:<6} {item['elsz']:<6} {item['size']:<6}")
 
         print("="*80 + "\n")
+
+    def print_tab_entries(self, indexes):
+        """Print specific tab entries for debugging"""
+        TYPE_MAP = {
+            0: 'undef', 1: 'int', 2: 'real', 3: 'bool', 
+            4: 'char', 5: 'array', 6: 'record', 7: 'string'
+        }
+        
+        print("\n" + "="*100)
+        print(f"DEBUG: Tab Entries {indexes}")
+        print("="*100)
+        print(f"{'idx':<5} {'id':<15} {'link':<6} {'obj':<12} {'type':<10} {'ref':<5} {'nrm':<5} {'lev':<5} {'adr':<6} {'init':<5}")
+        print("-"*100)
+        
+        for idx in indexes:
+            if idx < 0 or idx >= len(self.tab):
+                print(f"{idx:<5} [OUT OF BOUNDS]")
+                continue
+                
+            item = self.tab[idx]
+            t_str = TYPE_MAP.get(item['type'], str(item['type']))
+            
+            print(f"{item['idx']:<5} {item['id']:<15} {item['link']:<6} {item['obj']:<12} "
+                f"{t_str:<10} {item['ref']:<5} {item['nrm']:<5} {item['lev']:<5} "
+                f"{item['adr']:<6} {item['init']:<5}")
+        print("="*100 + "\n")

@@ -47,9 +47,9 @@ class Parser:
             self.next_SYM_idx = self.next_SYM_idx + 1
 
     def accept(self, type, value=None):
-        # print(self.SYM["type"] + " ini nilai type")
-        # print(self.SYM["value"] + " ini nilai value")
-        # print()
+        print(self.SYM["type"] + " ini nilai type")
+        print(self.SYM["value"] + " ini nilai value")
+        print()
         if (self.SYM["type"] != type or (value is not None and self.SYM["value"] != value)):
             expected_str = f"{type}({value})" if value is not None else type
             got_str = f"{self.SYM['type']}({self.SYM['value']})"
@@ -432,14 +432,15 @@ class Parser:
         
         return node
 
-    #21 <procedure/function-call> -> IDENTIFIER + (LPARENTHESIS + parameter-list + RPARENTHESIS)
+    #21 <procedure/function-call> -> IDENTIFIER + (LPARENTHESIS + parameter-list + RPARENTHESIS)?
     def procedure_function_call(self):
         node = TreeNode("<procedure/function-call>")
         node.add_child(self.accept(type="IDENTIFIER"))
-
-        node.add_child(self.accept(type="LPARENTHESIS"))
-        node.add_child(self.parameter_list())
-        node.add_child(self.accept(type="RPARENTHESIS"))
+        print("INI SYMBOL NOW " + self.SYM['value'])
+        if(not self.SYM['value'] == ';'):
+            node.add_child(self.accept(type="LPARENTHESIS"))
+            node.add_child(self.parameter_list())
+            node.add_child(self.accept(type="RPARENTHESIS"))
         return node
     
     #22 <parameter-list> -> expression + (COMMA + expression)*
@@ -617,7 +618,10 @@ class Parser:
                 if next_SYM_type == "LPARENTHESIS":
                     node.add_child(self.procedure_function_call())
                 else:
-                    node.add_child(self.assignment_statement())
+                    if(self.peek()['value'] == ';'):
+                        node.add_child(self.procedure_function_call())
+                    else:
+                        node.add_child(self.assignment_statement())
 
             case {"type": "KEYWORD", "value": "mulai"}:
                 node.add_child(self.compound_statement())
@@ -693,6 +697,9 @@ class Parser:
 
         elif (self.SYM["type"]== "IDENTIFIER"):
             node.add_child(self.accept(type="IDENTIFIER"))
+
+        elif (self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ["true", "false"]):
+             node.add_child(self.accept(type="KEYWORD", value=self.SYM["value"]))
 
         elif(self.SYM["type"]== "CHAR_LITERAL"):
             node.add_child(self.accept(type="CHAR_LITERAL"))

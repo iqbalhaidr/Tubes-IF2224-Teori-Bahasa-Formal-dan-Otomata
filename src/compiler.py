@@ -127,26 +127,29 @@ with open(f"{filePath}", "r") as f:
             current_state = temp
             value += ch
 
+print("================ Lexer Output ===============")
 for token in list_tokens:
     print(token)
 
-print("============ Parse Output ============")
+print("================ Parse Output ===============")
 p = Parser(list_tokens)
 parse_tree = p.parse()
 
-print("============ AST Output ============")
+print("================= AST Output ================")
 ast_builder = AST_Builder(parse_tree)
 ast = ast_builder.build()
-# print_ast(ast, indent_size=2)
+print_ast(ast, indent_size=2)
 
-print("============ Symbol Table Output ============")
 analyzer = SemanticAnalyzer()
 try:
     analyzer.visit(ast)
+    
+    print("========== Semantic Analysis Output =========")
     analyzer.print_all_tables()
     
+    print("============ Decorated AST Output ===========")
+    print_ast(ast, indent_size=2)
+
 except SemanticError as e:
     print(f"\n[SEMANTIC ERROR]: {e}")
     pass
-
-print_ast(ast, indent_size=2)
