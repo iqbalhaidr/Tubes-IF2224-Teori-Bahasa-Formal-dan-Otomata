@@ -133,7 +133,8 @@ class AST_Builder:
         return RecordTypeNode(fields)
 
     def visit_identifier_list(self, node: TreeNode):
-        return [self._extract_value(elem.name) for elem in node.children]
+        names = self._extract_identifier_list(node)
+        return names
     
     def visit_procedure_declaration(self, node: TreeNode):
         name = self._extract_value(node.children[1].name)
