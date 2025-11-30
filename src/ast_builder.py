@@ -308,7 +308,7 @@ class AST_Builder:
 
     def visit_procedure_call(self, node: TreeNode):
         name = self._extract_value(node.children[0].name)
-        print('P masuk procedure_call')
+        # print('P masuk procedure_call')
         args = self.visit(node.children[2]) if len(node.children) > 2 else []
         return ProcedureCallNode(name, args)
 
@@ -410,15 +410,17 @@ class AST_Builder:
         return statements
 
     def visit_parameter_list(self, node: TreeNode):
-        print("ini dia masuk parameter list")
+        # print("ini dia masuk parameter list")
         args = []
         
         for idx, child in enumerate(node.children):
             if child.name.startswith("<expression"):
-                print('ini dia parameter ke- ' + str(idx))
+                # print('ini dia parameter ke- ' + str(idx))
                 args.append(self.visit(child))
 
-        return args[0] if len(args) == 1 else args
+        # izin ya fer, biar konsisten returnnya selalu list
+        # return args[0] if len(args) == 1 else args
+        return args
 
     def visit_number_statement(self, node: TreeNode):
         if len(node.children) == 3:

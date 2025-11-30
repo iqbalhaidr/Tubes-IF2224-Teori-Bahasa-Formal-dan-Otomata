@@ -47,9 +47,9 @@ class Parser:
             self.next_SYM_idx = self.next_SYM_idx + 1
 
     def accept(self, type, value=None):
-        # print(self.SYM["type"] + " ini nilai type")
-        # print(self.SYM["value"] + " ini nilai value")
-        # print()
+        print(self.SYM["type"] + " ini nilai type")
+        print(self.SYM["value"] + " ini nilai value")
+        print()
         if (self.SYM["type"] != type or (value is not None and self.SYM["value"] != value)):
             expected_str = f"{type}({value})" if value is not None else type
             got_str = f"{self.SYM['type']}({self.SYM['value']})"
@@ -693,6 +693,9 @@ class Parser:
 
         elif (self.SYM["type"]== "IDENTIFIER"):
             node.add_child(self.accept(type="IDENTIFIER"))
+
+        elif (self.SYM["type"] == "KEYWORD" and self.SYM["value"] in ["true", "false"]):
+             node.add_child(self.accept(type="KEYWORD", value=self.SYM["value"]))
 
         elif(self.SYM["type"]== "CHAR_LITERAL"):
             node.add_child(self.accept(type="CHAR_LITERAL"))
