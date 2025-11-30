@@ -73,7 +73,7 @@ mulai
   c.capacity := cap;
 selesai;
 
-prosedur testcomplexaccess(dummy: integer);
+prosedur testcomplexaccess;
 variabel
   idx: integer;
 mulai
@@ -224,7 +224,7 @@ mulai
   i := MAXSIZE;
   x := PIVALUE;
   
-  testcomplexaccess(i);
+  testcomplexaccess;
   testcontrolflow(10);
   testnestedcalls(i);
   testarrays(i);

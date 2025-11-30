@@ -381,9 +381,9 @@ class SemanticAnalyzer:
 
     def visit_ProcedureDeclNode(self, node):
         proc_name = node.name
-        
+
         proc_idx = self.insert_tab(proc_name, "prosedur", TYPE_UNDEFINED, init=1)
-        
+    
         blk_idx = self.enter_block()
         self.tab[proc_idx]["ref"] = blk_idx
         
@@ -734,15 +734,15 @@ class SemanticAnalyzer:
         if op in arith_ops:
             # 'bagi' atau '/' selalu menghasilkan REAL
             # Jika salah satu operand REAL, hasil REAL (kecuali div/mod)
-            is_real_result = (op in ['/', 'bagi']) or (l_type == TYPE_REAL or r_type == TYPE_REAL)
+            is_real_result = (op in ['/']) or (l_type == TYPE_REAL or r_type == TYPE_REAL)
             
-            if is_real_result and op not in ['div', 'mod']:
+            if is_real_result:
                 res["typecode"] = TYPE_REAL
                 if has_val:
                     if op in ['+', 'tambah']: res["value"] = l_val + r_val
                     elif op in ['-', 'kurang']: res["value"] = l_val - r_val
                     elif op in ['*', 'kali']: res["value"] = l_val * r_val
-                    elif op in ['/', 'bagi']: res["value"] = l_val / r_val if r_val != 0 else 0
+                    elif op in ['/']: res["value"] = l_val / r_val if r_val != 0 else 0
             
             elif l_type == TYPE_INTEGER and r_type == TYPE_INTEGER:
                 res["typecode"] = TYPE_INTEGER
