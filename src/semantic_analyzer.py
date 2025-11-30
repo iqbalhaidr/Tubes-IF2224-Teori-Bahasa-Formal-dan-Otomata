@@ -310,12 +310,24 @@ class SemanticAnalyzer:
         
         if "value" not in visit_value or visit_value["value"] is None:
             raise SemanticError(f"Constant '{node.name}' value cannot be evaluated at compile time")
+        
+        const_type = visit_value["typecode"]
+        const_value = visit_value["value"]
+        final_adr = 0
+        # print(f"const_value: {const_value} ({type(const_value)})")
+        if const_type == TYPE_STRING:
+            final_adr = len(const_value.strip("'"))  # Simplifikasi: alamat = panjang string
+        elif const_type == TYPE_CHAR:
+            print(f"const_value: {const_value} ({type(const_value)})")
+            final_adr = ord(const_value.strip("'"))   # Alamat = kode ASCII (cdc tuwir ga ada lowercase jadi tentatif)
+        else:
+            final_adr = round(const_value) & 0xFFFFFFFF # kalau desimal buletin jd integer, kalau negatif jadi positif pake two's complement
 
         tab_idx = self.insert_tab(
             name=node.name, 
             obj="konstanta", 
             type_code=visit_value["typecode"], 
-            adr=visit_value["value"], 
+            adr=final_adr, 
             init=1
         )
 
@@ -536,7 +548,6 @@ class SemanticAnalyzer:
     def visit_RecordTypeNode(self, node):
         new_idx = self.enter_block() 
         
-        total_vsze = 0
 
         # fields is list of tuples (name, type_node) from ast_builder
         for name, type_node in node.info:

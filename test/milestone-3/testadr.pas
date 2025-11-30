@@ -1,5 +1,11 @@
 program CekScope;
 
+konstanta
+  NAMAKURSUS = 'TBFO IF2224';
+  KARAKTERA = 'a';
+  MAXSIZE = -100;
+  PI = 3.14159;
+
 tipe
   Angka5 = larik[1 .. 5] dari integer;
   recordtipe = rekaman
@@ -31,7 +37,7 @@ mulai
   varRecord.id := 5;
   varRecord.nilai := 1.8;
 
-  global1Var := 10;
+  global1Var := 10 + MAXSIZE;
   hitung(global1Var);
 
   global2Var := 2 * global1Var;
