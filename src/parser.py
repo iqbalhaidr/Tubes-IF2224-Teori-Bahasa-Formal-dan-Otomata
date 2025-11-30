@@ -432,14 +432,15 @@ class Parser:
         
         return node
 
-    #21 <procedure/function-call> -> IDENTIFIER + (LPARENTHESIS + parameter-list + RPARENTHESIS)
+    #21 <procedure/function-call> -> IDENTIFIER + (LPARENTHESIS + parameter-list + RPARENTHESIS)?
     def procedure_function_call(self):
         node = TreeNode("<procedure/function-call>")
         node.add_child(self.accept(type="IDENTIFIER"))
-
-        node.add_child(self.accept(type="LPARENTHESIS"))
-        node.add_child(self.parameter_list())
-        node.add_child(self.accept(type="RPARENTHESIS"))
+        print("INI SYMBOL NOW " + self.SYM['value'])
+        if(not self.SYM['value'] == ';'):
+            node.add_child(self.accept(type="LPARENTHESIS"))
+            node.add_child(self.parameter_list())
+            node.add_child(self.accept(type="RPARENTHESIS"))
         return node
     
     #22 <parameter-list> -> expression + (COMMA + expression)*
@@ -617,7 +618,10 @@ class Parser:
                 if next_SYM_type == "LPARENTHESIS":
                     node.add_child(self.procedure_function_call())
                 else:
-                    node.add_child(self.assignment_statement())
+                    if(self.peek()['value'] == ';'):
+                        node.add_child(self.procedure_function_call())
+                    else:
+                        node.add_child(self.assignment_statement())
 
             case {"type": "KEYWORD", "value": "mulai"}:
                 node.add_child(self.compound_statement())
