@@ -164,10 +164,12 @@ class Parser:
 
         return node
 
-    # <record_type> -> KEYWORD(rekaman) + (identifier-list + COLON(:) + (KEYWORD(integer) | KEYWORD(real) | KEYWORD(boolean) | KEYWORD(char)) + SEMICOLON(;))+
+    # <record_type> -> KEYWORD(packed) + KEYWORD(rekaman) + (identifier-list + COLON(:) + (KEYWORD(integer) | KEYWORD(real) | KEYWORD(boolean) | KEYWORD(char)) + SEMICOLON(;))+
     def record_type(self):
         node = TreeNode("<record-type>")
-
+        
+        if(self.SYM["value"] == "packed"):
+            node.add_child(self.accept("KEYWORD", "packed"))
         node.add_child(self.accept("KEYWORD", "rekaman"))
 
         while self.SYM["type"] == "IDENTIFIER":
@@ -230,7 +232,9 @@ class Parser:
                     node.add_child(self.accept(type="KEYWORD", value="boolean"))
                 case "char":
                     node.add_child(self.accept(type="KEYWORD", value="char"))
-                case "rekaman":
+                case "string":
+                    node.add_child(self.accept(type="KEYWORD", value="string"))
+                case "rekaman" | "packed":
                     node.add_child(self.record_type())
                 case "larik":
                     node.add_child(self.array_type())
@@ -515,9 +519,9 @@ class Parser:
             case {"type": "ARITHMETIC_OPERATOR", "value": "-"}:
                 node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="-"))
                 node.add_child(self.factor())
-            case {"type": "KEYWORD", "value": "true"}:
+            case {"type": "KEYWORD", "value": "true"}: # boolean literal
                 node.add_child(self.accept(type="KEYWORD", value="true"))
-            case {"type": "KEYWORD", "value": "false"}:
+            case {"type": "KEYWORD", "value": "false"}: # boolean literal
                 node.add_child(self.accept(type="KEYWORD", value="false"))
             case _:
                 print("Syntax error in factor")
@@ -698,7 +702,8 @@ class Parser:
 
         elif(self.SYM["type"]== "STRING_LITERAL"):
             node.add_child(self.accept(type="STRING_LITERAL"))
-        
+        elif (self.SYM["type"]== "KEYWORD" and (self.SYM["value"] == "true" or self.SYM["value"] == "false")):
+            node.add_child(self.accept(type="KEYWORD"))
         else:
             print(f"Syntax error: Invalid constant literal in {self.SYM}")
             sys.exit()

@@ -46,6 +46,7 @@ class TypeDeclNode:
 #  ============================ TYPE ============================
 class TypeNode:
     def __init__(self, type_kind, info=None):
+        # print(type_kind)
         self.type_kind = type_kind   # 'builtin', 'alias', 'array', 'record'
         self.info = info
         self.id = None
@@ -73,9 +74,8 @@ class ArrayTypeNode(TypeNode):
 
 
 class RecordTypeNode(TypeNode):
-    def __init__(self, fields):
-        # fields = list of (name, type_node)
-        super().__init__("record", fields)
+    def __init__(self, fields, kind="record"):
+        super().__init__(kind, fields)
 
 
 #  ============================ SUBPROGRAMS  ============================

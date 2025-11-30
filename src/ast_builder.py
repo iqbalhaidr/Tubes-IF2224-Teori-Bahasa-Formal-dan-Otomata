@@ -63,6 +63,8 @@ class AST_Builder:
                 value = StringNode(self._extract_value(const_node.name))
             elif const_node.name.startswith("CHAR_LITERAL"):
                 value = CharNode(self._extract_value(const_node.name))
+            elif const_node.name.startswith("KEYWORD(true)") or const_node.name.startswith("KEYWORD(false)"):
+                value = BooleanNode(self._extract_value(const_node.name) == "true")
             else:
                 raise Exception("Unhandled const literal: " + const_node.name)
 
@@ -117,18 +119,24 @@ class AST_Builder:
     def visit_record_type(self, node: TreeNode):
         fields = []
         idx = 1
+        packed = False
+        # buat skip si packed juga kalau ada, biar ga bug
+        if(node.children[idx-1].name == "KEYWORD(packed)"):
+            idx+=1
+            packed = True
         while idx < len(node.children) - 1:
             identifier_list = self.visit_identifier_list(node.children[idx])
             type_node = self.visit_type(node.children[idx + 2])
             fields.extend([(elem, type_node) for elem in identifier_list])
             idx += 4
+        
+        if(packed):
+            return RecordTypeNode(fields,"record_packed_type")
         return RecordTypeNode(fields)
 
     def visit_identifier_list(self, node: TreeNode):
-        # return [self._extract_value(elem.name) for elem in node.children]
-        return [self._extract_value(elem.name) 
-            for elem in node.children 
-            if elem.name.startswith("IDENTIFIER")]
+        names = self._extract_identifier_list(node)
+        return names
     
     def visit_procedure_declaration(self, node: TreeNode):
         name = self._extract_value(node.children[1].name)
@@ -424,13 +432,15 @@ class AST_Builder:
         return NumberNode(value)
 
     def visit_type(self, node: TreeNode):
+        # print(node.name + " INI NAMA NODE YANG ERROR DI VISIT TYPE")
         child = node.children[0]
         
         keyword_types = {
             "KEYWORD(integer)": "integer",
             "KEYWORD(real)": "real",
             "KEYWORD(boolean)": "boolean",
-            "KEYWORD(char)": "char"
+            "KEYWORD(char)": "char",
+            "KEYWORD(string)": "string"
         }
         
         for keyword, type_name in keyword_types.items():
