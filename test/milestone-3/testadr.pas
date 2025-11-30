@@ -19,14 +19,21 @@ variabel
   a: real;
   varRecord: recordtipe;
   global2Var: integer;
+  writeln: integer;
 
+fungsi f(param: integer): integer;
+mulai
+  f := 6 + param;   
+selesai;
 
 prosedur hitung(param: integer);
 variabel
+  a: char;
   lokal1Var: integer;
   lokalArr : Angka5;
   lokal2Var: integer;
 mulai
+  a := 'b';
   lokalArr[1] := 2;
   lokal1Var := 50;
   lokal2Var := 100 + lokal1Var;
@@ -39,8 +46,13 @@ mulai
 
   global1Var := 10 + MAXSIZE;
   hitung(global1Var);
-
   global2Var := 2 * global1Var;
   global1Var := global1Var + varRecord.id;
   a := 5.2 + varRecord.nilai;
+  global2Var := global2Var + f(global1Var);
+
+  jika false maka
+    writeln := global2Var
+  selainitu
+    writeln := 2;
 selesai.
