@@ -510,7 +510,8 @@ class SemanticAnalyzer:
     def visit_BuiltinTypeNode(self, node):
         mapping = {
             "integer": TYPE_INTEGER, "real": TYPE_REAL,
-            "boolean": TYPE_BOOLEAN, "char": TYPE_CHAR
+            "boolean": TYPE_BOOLEAN, "char": TYPE_CHAR,
+            "string" : TYPE_STRING
         }
 
         typecode = mapping.get(node.info, TYPE_UNDEFINED)
