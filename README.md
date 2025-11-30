@@ -34,13 +34,13 @@ python3 {path/to/src/compiler.py} {path/to/source_code.pas}
 ```
 Contoh:
 ```
-python3 src/compiler.py test/milestone-2/test1.pas
+python3 src/compiler.py test/milestone-3/test1.pas
 ```
 
 # Pembagian Tugas
 | NIM        | Milestone 1 | Milestone 2 | Milestone 3 | Milestone 4 | Milestone 5 |
 |------------|-------------|-------------|-------------|-------------|-------------|
-| 13523023   | 25% | 25% |  |  |  |
-| 13523025   | 25% | 25% |  |  |  |
-| 13523051   | 25% | 25% |  |  |  |
-| 13523111   | 25% | 25% |  |  |  |
+| 13523023   | 25% | 25% | 25% |  |  |
+| 13523025   | 25% | 25% | 25% |  |  |
+| 13523051   | 25% | 25% | 25% |  |  |
+| 13523111   | 25% | 25% | 25% |  |  |
