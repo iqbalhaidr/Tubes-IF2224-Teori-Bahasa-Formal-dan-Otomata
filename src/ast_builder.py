@@ -31,7 +31,7 @@ class AST_Builder:
         return ProgramNode(prog_name, declarations, block)
 
     def visit_compound_statement(self, node: TreeNode):
-        print("ini nama anak pertama dari compound statement " + node.children[1].name)
+        # print("ini nama anak pertama dari compound statement " + node.children[1].name)
         stmt_list = self.visit_statement_list(node.children[1])
         return BlockNode(stmt_list)
 
@@ -125,7 +125,10 @@ class AST_Builder:
         return RecordTypeNode(fields)
 
     def visit_identifier_list(self, node: TreeNode):
-        return [self._extract_value(elem.name) for elem in node.children]
+        # return [self._extract_value(elem.name) for elem in node.children]
+        return [self._extract_value(elem.name) 
+            for elem in node.children 
+            if elem.name.startswith("IDENTIFIER")]
     
     def visit_procedure_declaration(self, node: TreeNode):
         name = self._extract_value(node.children[1].name)
@@ -297,7 +300,7 @@ class AST_Builder:
 
     def visit_procedure_call(self, node: TreeNode):
         name = self._extract_value(node.children[0].name)
-        print('P masuk procedure_call')
+        # print('P masuk procedure_call')
         args = self.visit(node.children[2]) if len(node.children) > 2 else []
         return ProcedureCallNode(name, args)
 
@@ -386,28 +389,30 @@ class AST_Builder:
 
     # HELPER
     def visit_statement_list(self, node: TreeNode):
-        print('masuk statement list')
-        print('ini panjang si ganteng di statement list' + str(len(node.children)))
+        # print('masuk statement list')
+        # print('ini panjang si ganteng di statement list' + str(len(node.children)))
         statements = []
         idx = 0
         
         while idx < len(node.children) - 2:
-            print("ini nama dari anak statement di statement list " + node.children[idx].children[0].name)
+            # print("ini nama dari anak statement di statement list " + node.children[idx].children[0].name)
             statements.append(self.visit(node.children[idx].children[0]))
             idx += 2
         
         return statements
 
     def visit_parameter_list(self, node: TreeNode):
-        print("ini dia masuk parameter list")
+        # print("ini dia masuk parameter list")
         args = []
         
         for idx, child in enumerate(node.children):
             if child.name.startswith("<expression"):
-                print('ini dia parameter ke- ' + str(idx))
+                # print('ini dia parameter ke- ' + str(idx))
                 args.append(self.visit(child))
 
-        return args[0] if len(args) == 1 else args
+        # izin ya fer, biar konsisten returnnya selalu list
+        # return args[0] if len(args) == 1 else args
+        return args
 
     def visit_number_statement(self, node: TreeNode):
         if len(node.children) == 3:
