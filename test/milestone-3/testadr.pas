@@ -1,4 +1,4 @@
-program CekScope;
+program BerhasilAmin;
 
 konstanta
   NAMAKURSUS = 'TBFO IF2224';
@@ -12,9 +12,11 @@ tipe
     id: integer;
     nilai: real;
   selesai;
+  M = larik [1..10] dari larik [1..10] dari integer;
   
 
 variabel
+  tabel: M;
   global1Var: integer;
   a: real;
   varRecord: recordtipe;
@@ -41,6 +43,7 @@ mulai
 selesai;
 
 mulai
+  tabel[1][2] := 5;
   varRecord.id := 5;
   varRecord.nilai := 1.8;
 
