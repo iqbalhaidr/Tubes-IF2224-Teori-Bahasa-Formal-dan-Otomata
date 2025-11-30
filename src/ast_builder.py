@@ -117,6 +117,11 @@ class AST_Builder:
     def visit_record_type(self, node: TreeNode):
         fields = []
         idx = 1
+        packed = False
+        # buat skip si packed juga kalau ada, biar ga bug
+        if(node.children[idx-1].name == "KEYWORD(packed)"):
+            idx+=1
+            packed = True
         while idx < len(node.children) - 1:
             identifier_list = self.visit_identifier_list(node.children[idx])
             type_node = self.visit_type(node.children[idx + 2])
@@ -419,13 +424,15 @@ class AST_Builder:
         return NumberNode(value)
 
     def visit_type(self, node: TreeNode):
+        print(node.name + " INI NAMA NODE YANG ERROR DI VISIT TYPE")
         child = node.children[0]
         
         keyword_types = {
             "KEYWORD(integer)": "integer",
             "KEYWORD(real)": "real",
             "KEYWORD(boolean)": "boolean",
-            "KEYWORD(char)": "char"
+            "KEYWORD(char)": "char",
+            "KEYWORD(string)": "string"
         }
         
         for keyword, type_name in keyword_types.items():

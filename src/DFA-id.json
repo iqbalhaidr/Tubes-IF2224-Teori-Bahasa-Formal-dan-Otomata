@@ -55,6 +55,8 @@
     { "lexeme": "real",      "token": "KEYWORD" },
     { "lexeme": "boolean",   "token": "KEYWORD" },
     { "lexeme": "char",      "token": "KEYWORD" },
+    { "lexeme": "string",      "token": "KEYWORD" },
+    { "lexeme": "packed",      "token": "KEYWORD" },
     { "lexeme": "larik",     "token": "KEYWORD" },
     { "lexeme": "dari",        "token": "KEYWORD" },
     { "lexeme": "prosedur", "token": "KEYWORD" },

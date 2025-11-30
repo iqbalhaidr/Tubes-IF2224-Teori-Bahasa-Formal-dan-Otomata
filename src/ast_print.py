@@ -1,7 +1,7 @@
 from parser import *
 from ast_nodes import *
 
-# Mapping kode tipe ke string agar mudah dibaca manusia
+
 TYPE_MAP = {
     0: 'void', 1: 'integer', 2: 'real', 3: 'boolean', 
     4: 'char', 5: 'larik', 6: 'array', 7: 'string'
