@@ -538,6 +538,12 @@ class SemanticAnalyzer:
 
     def visit_AssignNode(self, node):
         visit_value = self.visit(node.value)
+        rhs_ptr = None
+        try:
+            rhs_ptr = visit_value['ptr']
+        except:
+            rhs_ptr = -1
+
         rhs_type = visit_value["typecode"]
         target = node.target
         
@@ -555,10 +561,10 @@ class SemanticAnalyzer:
 
             lhs = self.visit(target) 
 
-            if lhs["typecode"] != rhs_type:
+            if lhs["typecode"] != rhs_type or lhs['ptr'] != rhs_ptr:
                  # Allow assigning Int to Real
                  if not (lhs["typecode"] == TYPE_REAL and rhs_type == TYPE_INTEGER):
-                    raise SemanticError(f"Type mismatch in assignment: {lhs['typecode']} := {rhs_type}")
+                    raise SemanticError(f"Type mismatch in assignment: {lhs['typecode']} := {rhs_type}, if it was a record it might be a different record")
             
             # Mark the root variable as initialized
             root_var = target
