@@ -660,12 +660,21 @@ class SemanticAnalyzer:
         
         if sel_type not in [TYPE_INTEGER, TYPE_CHAR, TYPE_BOOLEAN]:
             raise SemanticError("CASE selector must be ordinal type (int, char, bool)")
-            
+        
+        used_labels = set()
+
         for branch in node.branches:
             for label in branch.labels:
                 lbl_res = self.visit(label)
                 if lbl_res["typecode"] != sel_type:
                     raise SemanticError("CASE label type mismatch with selector")
+
+                if "value" in lbl_res:
+                    lbl_value = lbl_res["value"]
+                    if lbl_value in used_labels:
+                        raise SemanticError("Duplicate CASE label value")
+                    used_labels.add(lbl_value)
+                    
             self.visit(branch.stmt)
 
         self.decorate(node, type=None, idx=None, lev=self.level)
