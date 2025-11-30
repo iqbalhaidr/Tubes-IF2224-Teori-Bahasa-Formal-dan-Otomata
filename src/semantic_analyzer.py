@@ -11,6 +11,11 @@ TYPE_ARRAY = 5
 TYPE_RECORD = 6
 TYPE_STRING = 7
 
+TYPE_MAP = {
+            0: '[0] undef', 1: '[1] int', 2: '[2] real', 3: '[3] boolean', 
+            4: '[4] char', 5: '[5] array', 6: '[6] record', 7: '[7] string'
+        }
+
 # Size dalam satuan memori abstrak
 SIZE_INTEGER = 1
 SIZE_REAL = 1
@@ -558,13 +563,14 @@ class SemanticAnalyzer:
                 tab_entry = self.lookup(root_var.name)
                 if tab_entry:
                     tab_entry["init"] = 1 # Mark initialized because we are writing to it
-
             lhs = self.visit(target) 
+            lhs_name = TYPE_MAP.get(lhs['typecode'], 'unknown')
+            rhs_name = TYPE_MAP.get(rhs_type, 'unknown')
 
             if lhs["typecode"] != rhs_type or lhs['ptr'] != rhs_ptr:
                  # Allow assigning Int to Real
                  if not (lhs["typecode"] == TYPE_REAL and rhs_type == TYPE_INTEGER):
-                    raise SemanticError(f"Type mismatch in assignment: {lhs['typecode']} := {rhs_type}, if it was a record it might be a different record")
+                    raise SemanticError(f"Type mismatch in assignment: {lhs_name} := {rhs_name}, if it was a record it might be a different record")
             
             # Mark the root variable as initialized
             root_var = target
@@ -820,8 +826,12 @@ class SemanticAnalyzer:
         tab_entry = self.lookup(node.name)
         if not tab_entry: raise SemanticError(f"Undeclared identifier '{node.name}'")
         
+        obj_type = tab_entry["obj"]
+
+        if obj_type == "fungsi":
+            raise SemanticError(f"Function '{node.name}' requires parentheses")
         # Cek Inisialisasi
-        if tab_entry["obj"] == "variabel" and tab_entry["init"] == 0:
+        if obj_type == "variabel" and tab_entry["init"] == 0:
             raise SemanticError(f"Variable '{node.name}' not initialized yet")
             
         self.decorate(node, type=tab_entry["type"], idx=tab_entry["idx"], lev=None)
@@ -832,7 +842,7 @@ class SemanticAnalyzer:
         }
 
         # Only include "value" for constants (compile-time known values)
-        if tab_entry["obj"] == "konstanta":
+        if obj_type == "konstanta":
             result["value"] = tab_entry["adr"]
         
         return result
@@ -957,10 +967,6 @@ class SemanticAnalyzer:
     
 # ================= PRINT TABLES FUNCTION =================
     def print_all_tables(self):
-        TYPE_MAP = {
-            0: '[0] undef', 1: '[1] int', 2: '[2] real', 3: '[3] boolean', 
-            4: '[4] char', 5: '[5] array', 6: '[6] record', 7: '[7] string'
-        }
 
         OBJ_MAP = {
             'konstanta': '[0] konstanta',
