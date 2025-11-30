@@ -519,6 +519,10 @@ class Parser:
             case {"type": "ARITHMETIC_OPERATOR", "value": "-"}:
                 node.add_child(self.accept(type="ARITHMETIC_OPERATOR", value="-"))
                 node.add_child(self.factor())
+            case {"type": "KEYWORD", "value": "true"}: # boolean literal
+                node.add_child(self.accept(type="KEYWORD", value="true"))
+            case {"type": "KEYWORD", "value": "false"}: # boolean literal
+                node.add_child(self.accept(type="KEYWORD", value="false"))
             case _:
                 print("Syntax error in factor")
                 sys.exit()
@@ -695,7 +699,8 @@ class Parser:
 
         elif(self.SYM["type"]== "STRING_LITERAL"):
             node.add_child(self.accept(type="STRING_LITERAL"))
-        
+        elif (self.SYM["type"]== "KEYWORD" and (self.SYM["value"] == "true" or self.SYM["value"] == "false")):
+            node.add_child(self.accept(type="KEYWORD"))
         else:
             print(f"Syntax error: Invalid constant literal in {self.SYM}")
             sys.exit()

@@ -63,6 +63,8 @@ class AST_Builder:
                 value = StringNode(self._extract_value(const_node.name))
             elif const_node.name.startswith("CHAR_LITERAL"):
                 value = CharNode(self._extract_value(const_node.name))
+            elif const_node.name.startswith("KEYWORD(true)") or const_node.name.startswith("KEYWORD(false)"):
+                value = BooleanNode(self._extract_value(const_node.name) == "true")
             else:
                 raise Exception("Unhandled const literal: " + const_node.name)
 
