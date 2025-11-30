@@ -649,6 +649,9 @@ class SemanticAnalyzer:
         if start["typecode"] != TYPE_INTEGER or end["typecode"] != TYPE_INTEGER:
              raise SemanticError("For-loop bounds must be integers")
         
+        if entry["obj"] != "variabel":
+            raise SemanticError(f"Loop variable '{node.var}' must be a variable")
+
         entry["init"] = 1
         self.visit(node.body)
 
