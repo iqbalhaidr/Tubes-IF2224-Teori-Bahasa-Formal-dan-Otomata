@@ -164,10 +164,12 @@ class Parser:
 
         return node
 
-    # <record_type> -> KEYWORD(rekaman) + (identifier-list + COLON(:) + (KEYWORD(integer) | KEYWORD(real) | KEYWORD(boolean) | KEYWORD(char)) + SEMICOLON(;))+
+    # <record_type> -> KEYWORD(packed) + KEYWORD(rekaman) + (identifier-list + COLON(:) + (KEYWORD(integer) | KEYWORD(real) | KEYWORD(boolean) | KEYWORD(char)) + SEMICOLON(;))+
     def record_type(self):
         node = TreeNode("<record-type>")
-
+        
+        if(self.SYM["value"] == "packed"):
+            node.add_child(self.accept("KEYWORD", "packed"))
         node.add_child(self.accept("KEYWORD", "rekaman"))
 
         while self.SYM["type"] == "IDENTIFIER":
@@ -230,7 +232,9 @@ class Parser:
                     node.add_child(self.accept(type="KEYWORD", value="boolean"))
                 case "char":
                     node.add_child(self.accept(type="KEYWORD", value="char"))
-                case "rekaman":
+                case "string":
+                    node.add_child(self.accept(type="KEYWORD", value="string"))
+                case "rekaman" | "packed":
                     node.add_child(self.record_type())
                 case "larik":
                     node.add_child(self.array_type())

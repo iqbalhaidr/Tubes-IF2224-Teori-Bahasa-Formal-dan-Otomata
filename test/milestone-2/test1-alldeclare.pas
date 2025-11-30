@@ -5,9 +5,17 @@ konstanta
 
 tipe
   Bil = integer;
+  gokil = string;
+  murid = packed rekaman
+    nama : string;
+    umur : integer;
+    nomorAbsen : integer;
+  selesai;
+
   Mahasiswa = rekaman
     nama : char;
     umur : integer;
+    namaOrtu : string;
   selesai;
 
 variabel
