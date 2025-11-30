@@ -4,7 +4,7 @@ from ast_nodes import *
 
 TYPE_MAP = {
     0: 'void', 1: 'integer', 2: 'real', 3: 'boolean', 
-    4: 'char', 5: 'larik', 6: 'array', 7: 'string'
+    4: 'char', 5: 'larik', 6: 'rekaman', 7: 'string'
 }
 class ASTPrinter:
     """Pretty printer for AST nodes"""
@@ -132,7 +132,15 @@ class ASTPrinter:
     
     def print_RecordTypeNode(self, node, indent):
         # lines = [f"{self._indent(indent)}RecordType:"]
-        lines = [self._print_header(node, "RecordType:", indent)]
+        lines = None
+        # print("ini node type kind yang terdeteksi " + node.type_kind)
+        if(node.type_kind == "record_packed_type"):
+            # print("masuk if ast print")
+            lines = [self._print_header(node, "RecordType(Packed):", indent)]
+        else:
+            # print("masuk else ast print")
+            # print(node.type_kind)
+            lines = [self._print_header(node, "RecordType:", indent)]
         if node.info:
             for name, type_node in node.info:
                 lines.append(f"{self._indent(indent + 1)}{name}:")

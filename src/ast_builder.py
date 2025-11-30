@@ -31,7 +31,7 @@ class AST_Builder:
         return ProgramNode(prog_name, declarations, block)
 
     def visit_compound_statement(self, node: TreeNode):
-        print("ini nama anak pertama dari compound statement " + node.children[1].name)
+        # print("ini nama anak pertama dari compound statement " + node.children[1].name)
         stmt_list = self.visit_statement_list(node.children[1])
         return BlockNode(stmt_list)
 
@@ -127,6 +127,9 @@ class AST_Builder:
             type_node = self.visit_type(node.children[idx + 2])
             fields.extend([(elem, type_node) for elem in identifier_list])
             idx += 4
+        
+        if(packed):
+            return RecordTypeNode(fields,"record_packed_type")
         return RecordTypeNode(fields)
 
     def visit_identifier_list(self, node: TreeNode):
@@ -391,13 +394,13 @@ class AST_Builder:
 
     # HELPER
     def visit_statement_list(self, node: TreeNode):
-        print('masuk statement list')
-        print('ini panjang si ganteng di statement list' + str(len(node.children)))
+        # print('masuk statement list')
+        # print('ini panjang si ganteng di statement list' + str(len(node.children)))
         statements = []
         idx = 0
         
         while idx < len(node.children) - 2:
-            print("ini nama dari anak statement di statement list " + node.children[idx].children[0].name)
+            # print("ini nama dari anak statement di statement list " + node.children[idx].children[0].name)
             statements.append(self.visit(node.children[idx].children[0]))
             idx += 2
         
@@ -424,7 +427,7 @@ class AST_Builder:
         return NumberNode(value)
 
     def visit_type(self, node: TreeNode):
-        print(node.name + " INI NAMA NODE YANG ERROR DI VISIT TYPE")
+        # print(node.name + " INI NAMA NODE YANG ERROR DI VISIT TYPE")
         child = node.children[0]
         
         keyword_types = {
