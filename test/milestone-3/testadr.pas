@@ -27,7 +27,7 @@ variabel
   lokalArr : Angka5;
   lokal2Var: integer;
 mulai
-  lokalArr[0] := 2;
+  lokalArr[1] := 2;
   lokal1Var := 50;
   lokal2Var := 100 + lokal1Var;
   global1Var := param + lokal2Var;
